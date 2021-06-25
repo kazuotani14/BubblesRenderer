@@ -1,11 +1,14 @@
 #pragma once
 
 #include "ray.h"
+#include "rtweekend.h"
 
+class Material;
 struct hit_record
 {
   Point3 p;
   Vec3 normal; // normal will always face outwards
+  shared_ptr<Material> mat_ptr;
   double t;
 
   bool front_face; // whether ray hit from front side (outwards surface) or not
