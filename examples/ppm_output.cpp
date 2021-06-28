@@ -60,12 +60,12 @@ int main()
 
   world.add(make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, material_ground));
   world.add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, material_center));
-  // world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, material_left));
-  world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.4, material_left));
+  world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, material_left));
+  world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.45, material_left));
   world.add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, material_right));
 
   // Camera
-  Camera cam;
+  Camera cam(Point3(-1, 1, 1), Point3(0, 0, -1), Vec3(0, 1, 0), 90, aspect_ratio);
 
   // Render
   std::cout << "P3\n"
