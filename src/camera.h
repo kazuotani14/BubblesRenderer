@@ -8,7 +8,7 @@ public:
   // focal length is implicitly 1.0
   Camera(Point3 lookfrom, Point3 lookat, Vec3 vup, double vfov_deg, double aspect_ratio,
          double aperture,
-         double focus_dist)
+         double focus_dist, double time0_in, double time1_in)
   {
     auto theta = degrees_to_radians(vfov_deg);
     auto h = tan(theta / 2);
@@ -25,6 +25,8 @@ public:
     lower_left_corner = origin - horizontal / 2 - vertical / 2 - focus_dist * w; // w is where focal length will go
 
     lens_radius = aperture / 2;
+    time0 = time0_in;
+    time1 = time1_in;
   }
 
   /// s,t: normalized [0,1] coordinates from lower left in col, row directions respectively
@@ -35,7 +37,8 @@ public:
 
     return Ray(
         origin + offset,
-        lower_left_corner + s * horizontal + t * vertical - origin - offset);
+        lower_left_corner + s * horizontal + t * vertical - origin - offset,
+        random_double(time0, time1));
   }
 
 private:
@@ -46,4 +49,5 @@ private:
 
   Vec3 u, v, w;
   double lens_radius;
+  double time0, time1; // shutter open/close times
 };

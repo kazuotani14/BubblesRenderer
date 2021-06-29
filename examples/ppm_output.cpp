@@ -18,12 +18,17 @@
 
 #include <iostream>
 
+static constexpr double bounce_t0 = 0.0;
+static constexpr double bounce_t1 = 1.0;
+
 HittableList random_scene()
 {
   HittableList world;
 
   auto ground_material = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
   world.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, ground_material));
+
+  static constexpr double ball_r = 0.2;
 
   for (int a = -11; a < 11; ++a)
   {
@@ -41,7 +46,9 @@ HittableList random_scene()
           // diffuse
           auto albedo = Vec3::random() * Vec3::random();
           sphere_material = make_shared<Lambertian>(albedo);
-          world.add(make_shared<Sphere>(center, 0.2, sphere_material));
+          auto center2 = center + Vec3(0, random_double(0, .5), 0);
+          world.add(make_shared<Sphere>(
+              center, center2, bounce_t0, bounce_t1, ball_r, sphere_material));
         }
         else if (choose_mat < 0.95)
         {
@@ -49,13 +56,13 @@ HittableList random_scene()
           auto albedo = Vec3::random(0.5, 1);
           auto fuzz = random_double(0, 0.5);
           sphere_material = make_shared<Metal>(albedo, fuzz);
-          world.add(make_shared<Sphere>(center, 0.2, sphere_material));
+          world.add(make_shared<Sphere>(center, ball_r, sphere_material));
         }
         else
         {
           // glass
           sphere_material = make_shared<Dielectric>(1.5);
-          world.add(make_shared<Sphere>(center, 0.2, sphere_material));
+          world.add(make_shared<Sphere>(center, ball_r, sphere_material));
         }
       }
     }
@@ -100,8 +107,8 @@ Color ray_color(const Ray &r, const Hittable &world, int depth)
 int main()
 {
   // Image
-  const auto aspect_ratio = 3.0 / 2.0;
-  const int image_width = 240;
+  const auto aspect_ratio = 16.0 / 9.0;
+  const int image_width = 200;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   const int samples_per_pixel = 100;
   const int max_depth = 50;
@@ -116,7 +123,7 @@ int main()
   double dist_to_focus = 10.0;
   double aperture = 0.1;
 
-  Camera cam(lookfrom, lookat, vup, 20.0, aspect_ratio, aperture, dist_to_focus);
+  Camera cam(lookfrom, lookat, vup, 20.0, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
   // Render
   std::cout << "P3\n"
