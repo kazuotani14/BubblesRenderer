@@ -17,6 +17,8 @@ public:
   virtual bool hit(
       const Ray &r, double t_min, double t_max, hit_record *rec) const override;
 
+  virtual bool bounding_box(double time0, double time1, AABB *output_box) const override;
+
   Point3 center(double time) const;
 
 public:
@@ -61,4 +63,17 @@ bool Sphere::hit(const Ray &r, double t_min, double t_max, hit_record *rec) cons
 Point3 Sphere::center(double time) const
 {
   return center0 + ((time - time0) / (time1 - time0)) * (center1 - center0);
+}
+
+bool Sphere::bounding_box(double time0, double time1, AABB *output_box) const
+{
+  Vec3 min_center(fmin(center0.x(), center1.x()), fmin(center0.y(), center1.y()), fmin(center0.z(), center1.z()));
+  Vec3 max_center(fmax(center0.x(), center1.x()), fmax(center0.y(), center1.y()), fmax(center0.z(), center1.z()));
+
+  Vec3 rad3(radius, radius, radius);
+
+  *output_box = AABB(
+      min_center - rad3,
+      max_center + rad3);
+  return true;
 }
