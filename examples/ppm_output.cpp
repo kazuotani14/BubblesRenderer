@@ -10,11 +10,13 @@
 
 #include "rtweekend.h"
 
+#include "bvh.h"
 #include "camera.h"
 #include "color.h"
 #include "hittable_list.h"
-#include "sphere.h"
 #include "material.h"
+#include "sphere.h"
+#include "timing.h"
 
 #include <iostream>
 
@@ -114,7 +116,10 @@ int main()
   const int max_depth = 50;
 
   // World
+  timing::tic();
   auto world = random_scene();
+  auto world_bvh = BVHNode(world, /* time0 */ 0, /* time1 */ 9999);
+  timing::toc("build world");
 
   // Camera
   Point3 lookfrom(13, 2, 3);
@@ -126,6 +131,7 @@ int main()
   Camera cam(lookfrom, lookat, vup, 20.0, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
   // Render
+  timing::tic();
   std::cout << "P3\n"
             << image_width << ' ' << image_height << "\n255\n";
 
@@ -141,7 +147,7 @@ int main()
         auto u = (col + random_double()) / (image_width - 1);
         auto v = (row + random_double()) / (image_height - 1);
         Ray r = cam.get_ray(u, v);
-        pixel_color += ray_color(r, world, max_depth);
+        pixel_color += ray_color(r, world_bvh, max_depth);
       }
       pixel_color /= samples_per_pixel;
 
@@ -150,4 +156,5 @@ int main()
   }
 
   std::cerr << "\nDone.\n";
+  timing::toc("render");
 }
