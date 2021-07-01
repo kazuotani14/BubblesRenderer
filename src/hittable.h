@@ -11,6 +11,8 @@ struct hit_record
   Vec3 normal; // normal will always face outwards
   shared_ptr<Material> mat_ptr;
   double t;
+  double u;
+  double v;
 
   bool front_face; // whether ray hit from front side (outwards surface) or not
   inline void set_face_normal(const Ray &r, const Vec3 &outward_normal)

@@ -1,9 +1,10 @@
 TODOs
-* prove derivation of refraction ray in 10.2
-* clean up code -- one pass
-  * remove `using`?
 
 * Ray tracing: the next week
+  * re-visit 3.4: correctly handle zeros and nans
+
+* clean up code -- one pass
+  * remove `using`?
 
 * Optimize code
   * use multiple threads. What's the best way to do this?
