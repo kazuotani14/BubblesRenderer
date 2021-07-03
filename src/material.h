@@ -8,6 +8,12 @@ struct hit_record;
 class Material
 {
 public:
+  virtual Color emitted(double u, double v, const Point3 &p) const
+  {
+    // basic materials are not lights
+    return Color(0, 0, 0);
+  }
+
   virtual bool scatter(
       const Ray &r_in, const hit_record &rec, Color *attenuation, Ray *scattered) const = 0;
 };
@@ -93,4 +99,26 @@ private:
     r0 = r0 * r0;
     return r0 + (1 - r0) * pow((1 - cosine), 5);
   }
+};
+
+class DiffuseLight : public Material
+{
+public:
+  DiffuseLight(shared_ptr<Texture> a) : emit(a) {}
+  DiffuseLight(const Color &c) : emit(make_shared<SolidColor>(c)) {}
+
+  virtual bool scatter(
+      const Ray &r_in, const hit_record &rec, Color *attenuation, Ray *scattered) const override
+  {
+    // light hitting this material is absorbed / overwritten
+    return false;
+  }
+
+  virtual Color emitted(double u, double v, const Point3 &p) const override
+  {
+    return emit->value(u, v, p);
+  }
+
+public:
+  shared_ptr<Texture> emit;
 };
