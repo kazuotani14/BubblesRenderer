@@ -2,6 +2,7 @@ TODOs
 
 * Ray tracing: the next week
   * re-visit 3.4: correctly handle zeros and nans
+  * for cornell box: how to reduce noise?
 
 * clean up code -- one pass
   * remove `using`?

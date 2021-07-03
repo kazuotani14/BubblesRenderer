@@ -5,6 +5,7 @@
 #include "material.h"
 #include "sphere.h"
 #include "aarect.h"
+#include "box.h"
 
 HittableList random_scene()
 {
@@ -99,6 +100,16 @@ HittableList cornell_box()
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 0, white));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 555, white));
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+  shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
+  box1 = make_shared<RotateY>(box1, 15);
+  box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+  objects.add(box1);
+
+  shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
+  box2 = make_shared<RotateY>(box2, -18);
+  box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+  objects.add(box2);
 
   return objects;
 }
