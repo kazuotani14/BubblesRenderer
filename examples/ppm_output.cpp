@@ -1,9 +1,9 @@
 /*
-  g++ -std=c++17 -I../src -o ppm_output ppm_output.cpp
+  g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp
   ./ppm_output > image.ppm
   open image.ppm
 
-  g++ -std=c++17 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image.ppm && open image.ppm
+  g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image.ppm && open image.ppm
 */
 
 // pixel values are listed in row-major order

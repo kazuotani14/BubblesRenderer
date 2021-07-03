@@ -96,32 +96,28 @@ RotateY::RotateY(shared_ptr<Hittable> p, double angle) : ptr(p)
   auto radians = degrees_to_radians(angle);
   sin_theta = sin(radians);
   cos_theta = cos(radians);
+
+  // Get bounding box of rotated object
   hasbox = ptr->bounding_box(0, 1, &bbox);
 
-  Point3 min(infinity, infinity, infinity);
-  Point3 max(-infinity, -infinity, -infinity);
+  Point3 min(infinity, bbox.min().y(), infinity);
+  Point3 max(-infinity, bbox.max().y(), -infinity);
 
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i <= 1; i++)
   {
-    for (int j = 0; j < 2; j++)
+    for (int k = 0; k <= 1; k++)
     {
-      for (int k = 0; k < 2; k++)
-      {
-        auto x = i * bbox.max().x() + (1 - i) * bbox.min().x();
-        auto y = j * bbox.max().y() + (1 - j) * bbox.min().y();
-        auto z = k * bbox.max().z() + (1 - k) * bbox.min().z();
+      // Rotate max and min points. i, k indices are a shorthand way to switch between the two
+      auto x = (i == 0) ? bbox.max().x() : bbox.min().x();
+      auto z = (k == 0) ? bbox.max().z() : bbox.min().z();
 
-        auto newx = cos_theta * x + sin_theta * z;
-        auto newz = -sin_theta * x + cos_theta * z;
+      auto newx = cos_theta * x + sin_theta * z;
+      auto newz = -sin_theta * x + cos_theta * z;
 
-        Vec3 tester(newx, y, newz);
-
-        for (int c = 0; c < 3; c++)
-        {
-          min[c] = fmin(min[c], tester[c]);
-          max[c] = fmax(max[c], tester[c]);
-        }
-      }
+      min[0] = fmin(min[0], newx);
+      max[0] = fmax(max[0], newx);
+      min[2] = fmin(min[2], newz);
+      max[2] = fmax(max[2], newz);
     }
   }
 
@@ -147,6 +143,7 @@ bool RotateY::hit(const Ray &r, double t_min, double t_max, hit_record *rec) con
   auto p = rec->p;
   auto normal = rec->normal;
 
+  // "transpose rotation matrix" to reverse rotation
   p[0] = cos_theta * rec->p[0] + sin_theta * rec->p[2];
   p[2] = -sin_theta * rec->p[0] + cos_theta * rec->p[2];
 
