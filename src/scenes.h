@@ -14,8 +14,9 @@ HittableList random_scene()
 
   HittableList world;
 
-  auto ground_material = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
-  world.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, ground_material));
+  auto ground_material = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+  // auto ground_material = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
+  world.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, make_shared<Lambertian>(ground_material)));
 
   static constexpr double ball_r = 0.2;
 
@@ -67,6 +68,18 @@ HittableList random_scene()
   world.add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
 
   return world;
+}
+
+HittableList two_spheres()
+{
+  HittableList objects;
+
+  auto checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+
+  objects.add(make_shared<Sphere>(Point3(0, -10, 0), 10, make_shared<Lambertian>(checker)));
+  objects.add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<Lambertian>(checker)));
+
+  return objects;
 }
 
 HittableList simple_light()

@@ -46,14 +46,14 @@ int main()
 {
   // Image
   double aspect_ratio = 16.0 / 9.0;
-  int image_width = 200;
-  int samples_per_pixel = 100;
+  int image_width = 300;
+  int samples_per_pixel = 200;
   int max_depth = 50;
 
   // World, camera
-  int scene_id = 2;
+  int scene_id = 1;
 
-  // defaults (for marble scenes)
+  // defaults (for sphere scenes)
   Color background(0.7, 0.8, 1.0);
   Point3 lookfrom(13, 2, 3);
   Point3 lookat(0, 0, 0);
@@ -70,17 +70,20 @@ int main()
   case 0: // bouncing marbles
     world_objects = random_scene();
     break;
-  case 1: // lights in the dark
+  case 1: // checkered spheres
+    world_objects = two_spheres();
+    break;
+  case 2: // lights in the dark
     world_objects = simple_light();
     background = Color(0, 0, 0);
     samples_per_pixel = 400;
     lookfrom = Point3(26, 3, 6);
     lookat = Point3(0, 2, 0);
     break;
-  case 2: // cornel box
+  case 3: // cornel box
     world_objects = cornell_box();
     aspect_ratio = 1.0;
-    image_width = 200;
+    image_width = 600;
     samples_per_pixel = 200;
     background = Color(0, 0, 0);
     lookfrom = Point3(278, 278, -800);
