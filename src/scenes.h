@@ -36,7 +36,9 @@ HittableList random_scene()
           // diffuse
           auto albedo = Vec3::random() * Vec3::random();
           sphere_material = make_shared<Lambertian>(albedo);
-          auto center2 = center + Vec3(0, random_double(0, .5), 0);
+
+          double bounce_prob = random_double();
+          auto center2 = center + ((bounce_prob < 0.2) ? Vec3(0, random_double(0, .5), 0) : Vec3(0, 0, 0));
           world.add(make_shared<Sphere>(
               center, center2, bounce_t0, bounce_t1, ball_r, sphere_material));
         }
