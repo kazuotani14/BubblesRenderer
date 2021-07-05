@@ -51,7 +51,7 @@ int main()
   int max_depth = 50;
 
   // World, camera
-  int scene_id = 1;
+  int scene_id = 2;
 
   // defaults (for sphere scenes)
   Color background(0.7, 0.8, 1.0);
@@ -73,14 +73,17 @@ int main()
   case 1: // checkered spheres
     world_objects = two_spheres();
     break;
-  case 2: // lights in the dark
+  case 2:
+    world_objects = earth();
+    break;
+  case 3: // lights in the dark
     world_objects = simple_light();
     background = Color(0, 0, 0);
     samples_per_pixel = 400;
     lookfrom = Point3(26, 3, 6);
     lookat = Point3(0, 2, 0);
     break;
-  case 3: // cornel box
+  case 4: // cornell box
     world_objects = cornell_box();
     aspect_ratio = 1.0;
     image_width = 600;

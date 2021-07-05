@@ -82,6 +82,15 @@ HittableList two_spheres()
   return objects;
 }
 
+HittableList earth()
+{
+  auto earth_texture = make_shared<ImageTexture>("images/earthmap.jpeg"); // assumes running in examples dir
+  auto earth_surface = make_shared<Lambertian>(earth_texture);
+  auto globe = make_shared<Sphere>(Point3(0, 0, 0), 2, earth_surface);
+
+  return HittableList(globe);
+}
+
 HittableList simple_light()
 {
   HittableList objects;
