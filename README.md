@@ -1,23 +1,17 @@
-# TODOs
+# Ray Trace Renderer
 
-* section 9 (volumes)
-* re-visit 3.4: correctly handle zeros and nans
+Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/).
 
-* Ray tracing: the next week
-  * for cornell box: how to reduce noise? try more samples, more
-    * see "rest of your life" for importance sampling
-  * go through section 5: perlin noise
+Most of the implementation is in headers right now, to make compilation simple. Build instructions: 
+```
+cd examples
 
-* clean up code
-  * Optimize code
-    * use multiple threads. What's the best way to do this?
-    * try optimizing: look for hotstops with callgrind?
-  * Make custom clang-format file
-    * references should be attached to type
-    * support c++17 (i.e. `std::vector<std::shared_ptr<Hittable> >` shouldn't have a space)
-  * turn on compiler warnings
-  * make CMake file? or waf
+g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp
+./ppm_output > image.ppm
+open image.ppm # on os x
 
-* future projects
-  * fluid simulation + render
-  * beach sim: static sand to start, then dynamic
+# in one command
+g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image.ppm && open image.ppm
+```
+
+See TODOs for future work.

@@ -1,16 +1,5 @@
-/*
-  g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp
-  ./ppm_output > image.ppm
-  open image.ppm
-
-  g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image.ppm && open image.ppm
-*/
-
-// pixel values are listed in row-major order
-
 #include "common.h"
 #include "scenes.h"
-
 #include "bvh.h"
 #include "camera.h"
 #include "color.h"
@@ -51,7 +40,7 @@ int main()
   int max_depth = 50;
 
   // World, camera
-  int scene_id = 2;
+  int scene_id = 0;
 
   // defaults (for sphere scenes)
   Color background(0.7, 0.8, 1.0);
@@ -110,6 +99,7 @@ int main()
   std::cout << "P3\n"
             << image_width << ' ' << image_height << "\n255\n";
 
+  // pixel values are listed in row-major order
   for (int row = image_height - 1; row >= 0; --row) // scan from top row down (for ppm format)
   {
     std::cerr << "\rScanlines remaining: " << row << ' ' << std::flush;
