@@ -8,7 +8,7 @@
 
 // pixel values are listed in row-major order
 
-#include "rtweekend.h"
+#include "common.h"
 #include "scenes.h"
 
 #include "bvh.h"

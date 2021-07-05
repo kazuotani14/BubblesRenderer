@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtweekend.h"
+#include "common.h"
 #include "texture.h"
 
 struct hit_record;

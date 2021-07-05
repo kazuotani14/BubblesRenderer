@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtweekend.h"
+#include "common.h"
 
 class Camera
 {

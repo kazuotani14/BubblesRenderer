@@ -2,7 +2,7 @@
 
 #include "aabb.h"
 #include "ray.h"
-#include "rtweekend.h"
+#include "common.h"
 
 class Material;
 struct hit_record

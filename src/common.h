@@ -5,7 +5,7 @@
 #include <memory>
 #include <cstdlib>
 
-// Usings -- TODO consider removing
+// Usings
 using std::make_shared;
 using std::shared_ptr;
 using std::sqrt;
