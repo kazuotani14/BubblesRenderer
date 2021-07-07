@@ -6,6 +6,8 @@
 #include "sphere.h"
 #include "aarect.h"
 #include "box.h"
+#include "constant_medium.h"
+#include "bvh.h"
 
 HittableList random_scene()
 {
@@ -134,6 +136,102 @@ HittableList cornell_box()
   box2 = make_shared<RotateY>(box2, -18);
   box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
   objects.add(box2);
+
+  return objects;
+}
+
+HittableList cornell_smoke()
+{
+  HittableList objects;
+
+  auto red = make_shared<Lambertian>(Color(.65, .05, .05));
+  auto white = make_shared<Lambertian>(Color(.73, .73, .73));
+  auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+  auto light = make_shared<DiffuseLight>(Color(7, 7, 7));
+
+  objects.add(make_shared<YZRect>(0, 555, 0, 555, 555, green));
+  objects.add(make_shared<YZRect>(0, 555, 0, 555, 0, red));
+  objects.add(make_shared<XZRect>(113, 443, 127, 432, 554, light));
+  objects.add(make_shared<XZRect>(0, 555, 0, 555, 555, white));
+  objects.add(make_shared<XZRect>(0, 555, 0, 555, 0, white));
+  objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+  shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
+  box1 = make_shared<RotateY>(box1, 15);
+  box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+
+  shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
+  box2 = make_shared<RotateY>(box2, -18);
+  box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+
+  objects.add(make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+  objects.add(make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+
+  return objects;
+}
+
+HittableList final_scene()
+{
+  HittableList objects;
+
+  HittableList balls;
+  auto ground = make_shared<Lambertian>(Color(0.48, 0.83, 0.53));
+  const int balls_per_side = 20;
+  for (int i = 0; i < balls_per_side; i++)
+  {
+    for (int j = 0; j < balls_per_side; j++)
+    {
+      auto w = 100.0;
+      auto x0 = -1000.0 + i * w;
+      auto z0 = -1000.0 + j * w;
+      auto y0 = 0.0;
+      auto x1 = x0 + w;
+      auto y1 = random_double(1, 101);
+      auto z1 = z0 + w;
+
+      balls.add(make_shared<Box>(Point3(x0, y0, z0), Point3(x1, y1, z1), ground));
+    }
+  }
+
+  HittableList ground_boxes;
+  auto white = make_shared<Lambertian>(Color(.73, .73, .73));
+  int ns = 1000;
+  for (int j = 0; j < ns; j++)
+  {
+    ground_boxes.add(make_shared<Sphere>(Vec3::random(0, 165), 10, white));
+  }
+
+  // Add two sets of repeated object sets as independent BVH nodes, since they have a lot of structure
+  objects.add(make_shared<BVHNode>(balls, 0, 1));
+  objects.add(make_shared<Translate>(
+      make_shared<RotateY>(
+          make_shared<BVHNode>(ground_boxes, 0.0, 1.0), 15),
+      Vec3(-100, 270, 395)));
+
+  // Add rest of objects
+  auto light = make_shared<DiffuseLight>(Color(7, 7, 7));
+  objects.add(make_shared<XZRect>(123, 423, 147, 412, 554, light));
+
+  auto center1 = Point3(400, 400, 200);
+  auto center2 = center1 + Vec3(30, 0, 0);
+  auto moving_sphere_material = make_shared<Lambertian>(Color(0.7, 0.3, 0.1));
+  objects.add(make_shared<Sphere>(center1, center2, 0, 1, 50, moving_sphere_material));
+
+  objects.add(make_shared<Sphere>(Point3(260, 150, 45), 50, make_shared<Dielectric>(1.5)));
+  objects.add(make_shared<Sphere>(
+      Point3(0, 150, 145), 50, make_shared<Metal>(Color(0.8, 0.8, 0.9), 1.0)));
+
+  auto boundary = make_shared<Sphere>(Point3(360, 150, 145), 70, make_shared<Dielectric>(1.5));
+  objects.add(boundary);
+  objects.add(make_shared<ConstantMedium>(boundary, 0.2, Color(0.2, 0.4, 0.9)));
+  boundary = make_shared<Sphere>(Point3(0, 0, 0), 5000, make_shared<Dielectric>(1.5));
+  objects.add(make_shared<ConstantMedium>(boundary, .0001, Color(1, 1, 1)));
+
+  auto emat = make_shared<Lambertian>(make_shared<ImageTexture>("images/earthmap.jpeg"));
+  objects.add(make_shared<Sphere>(Point3(400, 200, 400), 100, emat));
+  // auto pertext = make_shared<noise_texture>(0.1);
+  auto red_texture = make_shared<Lambertian>(Color(0.7, 0.1, 0.1));
+  objects.add(make_shared<Sphere>(Point3(220, 280, 300), 80, red_texture));
 
   return objects;
 }

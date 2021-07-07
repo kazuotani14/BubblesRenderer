@@ -1,6 +1,6 @@
 # TODOs
 
-* section 9 (volumes)
+* section 9 (volumes) -- understand the ConstantMedium::hit math
 * re-visit 3.4: correctly handle zeros and nans
 
 * Ray tracing: the next week

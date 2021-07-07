@@ -2,7 +2,7 @@
 
 Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/).
 
-Most of the implementation is in headers right now, to make compilation simple. Build instructions: 
+Most of the implementation is in headers right now, to make compilation simple. Build instructions:
 ```
 cd examples
 
