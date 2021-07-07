@@ -1,12 +1,11 @@
 # TODOs
 
-* section 9 (volumes) -- understand the ConstantMedium::hit math
-* re-visit 3.4: correctly handle zeros and nans
-
 * Ray tracing: the next week
-  * for cornell box: how to reduce noise? try more samples, more
-    * see "rest of your life" for importance sampling
   * go through section 5: perlin noise
+  * section 9 (volumes) -- understand the ConstantMedium::hit math
+  * re-visit 3.4: correctly handle zeros and nans
+
+* for cornell box: how to reduce noise? see "rest of your life" for importance sampling
 
 * clean up code
   * Optimize code
