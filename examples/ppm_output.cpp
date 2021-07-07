@@ -48,7 +48,7 @@ int main()
   Point3 lookat(0, 0, 0);
   Vec3 vup(0, 1, 0);
   double dist_to_focus = 10.0;
-  double aperture = 0.1;
+  double aperture = 0.0;
   double vfov = 20.0;
 
   timing::tic();
