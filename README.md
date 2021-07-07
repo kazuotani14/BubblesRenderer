@@ -1,4 +1,4 @@
-# Ray Trace Renderer
+# Bubbles Renderer
 
 Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/).
 
