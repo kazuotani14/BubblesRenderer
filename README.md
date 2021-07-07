@@ -14,6 +14,6 @@ open image.ppm # on os x
 g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image.ppm && open image.ppm
 ```
 
-See TODOs for future work.
+See TODOs.md for future work.
 
-![](./examples/images/marble_scene.jpg)
+![](./examples/images/marbles_scene.jpg)
