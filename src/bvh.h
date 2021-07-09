@@ -59,6 +59,7 @@ BVHNode::BVHNode(
     const std::vector<shared_ptr<Hittable> > &src_objects,
     size_t start_idx, size_t end_idx, double time0, double time1)
 {
+  assert(src_objects.size() > 0);
   auto objects = src_objects; // Create a modifiable array of the source scene objects
 
   int axis = random_int(0, 2);

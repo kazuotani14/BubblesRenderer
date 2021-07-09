@@ -40,7 +40,7 @@ int main()
   int max_depth = 50;
 
   // World, camera
-  int scene_id = 2;
+  int scene_id = 7;
 
   // defaults (for sphere scenes)
   Color background(0.7, 0.8, 1.0);
@@ -101,6 +101,21 @@ int main()
     lookfrom = Point3(478, 278, -600);
     lookat = Point3(278, 278, 0);
     vfov = 40.0;
+    break;
+  case 7: // box for fluids
+    static constexpr double box_size = 800.0;
+    static constexpr double half_box_size = 0.5 * box_size;
+    static constexpr double particle_size = 16.0;
+    world = fluids_box(box_size, particle_size, {{half_box_size, half_box_size, half_box_size}});
+    aspect_ratio = 1.0;
+    image_width = 200;
+    samples_per_pixel = 200;
+    background = Color(0.7, 0.8, 1.0);
+    vfov = 60.0;
+    // lookfrom = Point3(-box_size, half_box_size, half_box_size);
+    // lookat = Point3(0, half_box_size, half_box_size);
+    lookfrom = Point3(-box_size, box_size, -box_size);
+    lookat = Point3(-half_box_size, 0.75 * box_size, -half_box_size);
     break;
   default:
     std::cerr << "Invalid scene id: " << scene_id << std::endl;

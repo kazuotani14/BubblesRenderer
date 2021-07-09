@@ -9,6 +9,8 @@
 #include "constant_medium.h"
 #include "bvh.h"
 
+#include <vector>
+
 HittableList random_scene()
 {
   static constexpr double bounce_t0 = 0.0;
@@ -232,6 +234,34 @@ HittableList final_scene()
   // auto pertext = make_shared<noise_texture>(0.1);
   auto red_texture = make_shared<Lambertian>(Color(0.7, 0.1, 0.1));
   objects.add(make_shared<Sphere>(Point3(220, 280, 300), 80, red_texture));
+
+  return objects;
+}
+
+/// Transparent box with one corner at (0, 0, 0) and opposite corner at (size, size, size)
+HittableList fluids_box(double box_size, double particle_size, const std::vector<Point3> &particle_positions)
+{
+  HittableList objects;
+
+  const double half_box_size = 0.5 * box_size;
+  const double double_box_size = 2 * box_size;
+
+  auto glass = make_shared<Dielectric>(1.0, Color(0.97, 0.97, 0.97));
+  shared_ptr<Hittable> box = make_shared<Box>(Point3(0, 0, 0), Point3(box_size, box_size, box_size), glass);
+  objects.add(box);
+
+  auto ground = make_shared<Lambertian>(Color(0.7, 0.7, 0.7));
+  // auto ground = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+  objects.add(make_shared<XZRect>(-double_box_size, double_box_size, -double_box_size, double_box_size, -0.1, ground));
+
+  auto water = make_shared<Lambertian>(Color(0.5, 0.5, 1.0));
+  // auto water = make_shared<Dielectric>(1.3, Color(0.9, 0.9, 1.0));
+  HittableList particles;
+  for (const auto &p : particle_positions)
+  {
+    particles.add(make_shared<Sphere>(Point3(p.x(), p.y(), p.z()), particle_size, water));
+  }
+  objects.add(make_shared<BVHNode>(particles, 0, 1));
 
   return objects;
 }
