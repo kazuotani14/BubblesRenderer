@@ -65,6 +65,11 @@ public:
     return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
   }
 
+  inline static Vec3 Zero()
+  {
+    return Vec3(0, 0, 0);
+  }
+
 public:
   double e[3];
 };
@@ -76,7 +81,7 @@ using Color = Vec3;  // RGB color
 // Vec3 Utility Functions
 inline std::ostream &operator<<(std::ostream &out, const Vec3 &v)
 {
-  return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
+  return out << v.e[0] << ", " << v.e[1] << ", " << v.e[2];
 }
 
 inline Vec3 operator+(const Vec3 &u, const Vec3 &v)
@@ -123,7 +128,11 @@ inline Vec3 cross(const Vec3 &u, const Vec3 &v)
 
 inline Vec3 unit_vector(Vec3 v)
 {
-  return v / v.length();
+  const double norm = v.length();
+  if (norm < 1e-12)
+    return Vec3::Zero();
+  else
+    return v / norm;
 }
 
 inline Vec3 random_in_unit_sphere()

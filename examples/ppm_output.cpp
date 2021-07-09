@@ -35,12 +35,12 @@ int main()
 {
   // Image
   double aspect_ratio = 16.0 / 9.0;
-  int image_width = 480;
+  int image_width = 300;
   int samples_per_pixel = 300;
   int max_depth = 50;
 
   // World, camera
-  int scene_id = 6;
+  int scene_id = 2;
 
   // defaults (for sphere scenes)
   Color background(0.7, 0.8, 1.0);
@@ -142,4 +142,6 @@ int main()
 
   std::cerr << "\nDone.\n";
   timing::toc("render");
+
+  return 0;
 }
