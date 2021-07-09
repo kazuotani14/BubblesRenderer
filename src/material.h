@@ -64,12 +64,12 @@ public:
 class Dielectric : public Material
 {
 public:
-  Dielectric(double index_of_refraction) : ir(index_of_refraction) {}
+  Dielectric(double index_of_refraction, const Color &c = Color(1, 1, 1)) : ir(index_of_refraction), albedo(c) {}
 
   virtual bool scatter(
       const Ray &r_in, const hit_record &rec, Color *attenuation, Ray *scattered) const override
   {
-    *attenuation = Color(1.0, 1.0, 1.0);
+    *attenuation = albedo;
     double refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
 
     Vec3 unit_direction = unit_vector(r_in.direction());
@@ -90,6 +90,7 @@ public:
 
 public:
   double ir; // Index of Refraction
+  Color albedo;
 
 private:
   static double reflectance(double cosine, double ref_idx)
