@@ -1,35 +1,10 @@
-#include "common.h"
 #include "scenes.h"
 #include "bvh.h"
+#include "render.h"
 #include "camera.h"
-#include "color.h"
-#include "hittable_list.h"
-#include "material.h"
-#include "sphere.h"
 #include "timing.h"
 
 #include <iostream>
-
-Color ray_color(const Ray &r, const Color &background, const Hittable &world, int depth)
-{
-  // If we've exceeded the ray bounce limit, no more light is gathered.
-  if (depth <= 0)
-    return Color(0, 0, 0);
-
-  hit_record rec;
-  // If the ray hits nothing, return the background color.
-  if (!world.hit(r, 0.001, infinity, &rec))
-    return background;
-
-  Color attenuation;
-  Ray scattered;
-  Color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
-
-  if (!rec.mat_ptr->scatter(r, rec, &attenuation, &scattered))
-    return emitted;
-
-  return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
-}
 
 int main()
 {
@@ -40,7 +15,7 @@ int main()
   int max_depth = 50;
 
   // World, camera
-  int scene_id = 7;
+  int scene_id = 0;
 
   // defaults (for sphere scenes)
   Color background(0.7, 0.8, 1.0);
@@ -102,11 +77,11 @@ int main()
     lookat = Point3(278, 278, 0);
     vfov = 40.0;
     break;
-  case 7: // box for fluids
+  case 7: // testing box for fluids
     static constexpr double box_size = 800.0;
     static constexpr double half_box_size = 0.5 * box_size;
     static constexpr double particle_size = 16.0;
-    world = fluids_box(box_size, particle_size, {{half_box_size, half_box_size, half_box_size}});
+    world = water_in_box(box_size, particle_size, {{half_box_size, half_box_size, half_box_size}});
     aspect_ratio = 1.0;
     image_width = 200;
     samples_per_pixel = 200;

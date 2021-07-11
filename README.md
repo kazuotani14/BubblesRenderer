@@ -16,11 +16,11 @@ g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image
 
 # For fluids sim rendering
 ## 2D prototype viz: set output_mode = 0
-g++ -std=c++17 -O3 -I../src -o fluids_text_output fluids_text_output.cpp && ./fluids_text_output > particle_data.py
+g++ -std=c++17 -O3 -I../src -o fluids_sim fluids_sim.cpp && ./fluids_sim > particle_data.py
 python fluids_viz.py
 
 ## 3D gif generation: set output_mode =1
-g++ -std=c++17 -O3 -I../src -o fluids_text_output fluids_text_output.cpp && ./fluids_text_output
+g++ -std=c++17 -O3 -I../src -o fluids_sim fluids_sim.cpp && ./fluids_sim
 convert -delay 20 -loop 0 images/frames/*.ppm filename.gif
 ```
 

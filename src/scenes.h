@@ -238,8 +238,8 @@ HittableList final_scene()
   return objects;
 }
 
-/// Transparent box with one corner at (0, 0, 0) and opposite corner at (size, size, size)
-HittableList fluids_box(double box_size, double particle_size, const std::vector<Point3> &particle_positions)
+/// Transparent cube with one corner at (0, 0, 0) and opposite corner at (size, size, size)
+HittableList water_in_box(double box_size, double particle_size, const std::vector<Point3> &particle_positions)
 {
   HittableList objects;
 

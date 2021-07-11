@@ -1,14 +1,9 @@
 #include "fluids/particle.h"
-#include "timing.h"
 
-#include "common.h"
 #include "scenes.h"
 #include "bvh.h"
 #include "camera.h"
-#include "color.h"
-#include "hittable_list.h"
-#include "material.h"
-#include "sphere.h"
+#include "render.h"
 #include "timing.h"
 
 #include <limits>
@@ -16,27 +11,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-
-Color ray_color(const Ray &r, const Color &background, const Hittable &world, int depth)
-{
-  // If we've exceeded the ray bounce limit, no more light is gathered.
-  if (depth <= 0)
-    return Color(0, 0, 0);
-
-  hit_record rec;
-  // If the ray hits nothing, return the background color.
-  if (!world.hit(r, 0.001, infinity, &rec))
-    return background;
-
-  Color attenuation;
-  Ray scattered;
-  Color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
-
-  if (!rec.mat_ptr->scatter(r, rec, &attenuation, &scattered))
-    return emitted;
-
-  return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
-}
 
 int main()
 {
@@ -51,9 +25,9 @@ int main()
   Vec3 vup(0, 1, 0);
   double dist_to_focus = 10.0;
   double aperture = 0.0;
-  double vfov = 60.0;
+  double vfov = 50.0;
 
-  static constexpr double box_size = 600.0;
+  static constexpr double box_size = 700.0;
   static constexpr double half_box_size = 0.5 * box_size;
   static constexpr double particle_size = 16.0;
   Color background = Color(0.7, 0.8, 1.0);
@@ -77,7 +51,7 @@ int main()
 
   const double POLY6 = 315. / (64. * M_PI * pow(R, 9.));
   const double SPIKY_GRAD = -45. / (M_PI * pow(R, 6.));
-  const double VISC = 250.; // viscosity constant
+  const double VISC = 200.; // viscosity constant
   const double VISC_LAP = 45. / (M_PI * pow(R, 6.));
 
   Vec3 box_lb(0, 0, 0);
@@ -88,11 +62,12 @@ int main()
   const double duration = 1.0;
   const double dt = 1e-3; // 0.0008;
   const int num_steps = duration / dt + 1;
+  const bool constrain_to_xy = false;
 
-  double render_frame_dt = 0.05;
+  double render_frame_dt = 0.025;
   const int render_step_interval = render_frame_dt / dt;
   const int total_render_frames = num_steps / render_step_interval;
-  const int max_render_id_digits = log10(total_render_frames);
+  const int max_render_id_digits = num_digits(total_render_frames);
 
   // Initialize particles
   timing::tic();
@@ -108,7 +83,7 @@ int main()
           Particle p;
           auto gen_jitter = []()
           { return static_cast<float>(rand()) / static_cast<float>(RAND_MAX); };
-          p.position = Vec3(x + gen_jitter(), y, z + gen_jitter());
+          p.position = Vec3(x + gen_jitter(), constrain_to_xy ? 0 : y, z + gen_jitter());
           p.velocity = Vec3::Zero();
           particles.push_back(p);
         }
@@ -199,21 +174,21 @@ int main()
 
       for (int box_axis = 0; box_axis <= 2; ++box_axis)
       {
-
-        if (p.position[box_axis] < R)
+        if (p.position[box_axis] < box_lb[box_axis] + R)
         {
           p.velocity[box_axis] = +abs(p.velocity[box_axis]) * restitution_coeff;
-          p.velocity[box_axis] = +abs(p.velocity[box_axis]) * restitution_coeff;
+          p.position[box_axis] = box_lb[box_axis] + R;
         }
 
-        if (p.position[box_axis] > box_size - R)
+        if (p.position[box_axis] > box_ub[box_axis] - R)
         {
           p.velocity[box_axis] = -abs(p.velocity[box_axis]) * restitution_coeff;
-          p.position[box_axis] = box_size - R;
+          p.position[box_axis] = box_ub[box_axis] - R;
         }
       }
 
-      // p.position[2] = 0.0;
+      if (constrain_to_xy)
+        p.position[2] = 0.0;
 
       if (output_mode == 0)
       {
@@ -223,29 +198,27 @@ int main()
 
     if (output_mode == 1 && i % render_step_interval == 0)
     {
-      int frame_id = i / render_step_interval;
-      int num_frame_digits = std::max(1, int(log10(frame_id))); // handle log10(zero)=-inf
-      int num_lead_zeros = max_render_id_digits - num_frame_digits;
-      std::cerr << num_frame_digits << std::endl;
-
-      std::string frame_id_str = num_lead_zeros ? std::string(num_lead_zeros, '0') : "" + std::to_string(frame_id);
-      std::string file_name = std::string("images/frames/frame_") + frame_id_str + std::string(".ppm");
+      const int frame_id = i / render_step_interval;
+      const int num_lead_zeros = max_render_id_digits - num_digits(frame_id);
+      const std::string frame_id_str = std::string(num_lead_zeros, '0') + std::to_string(frame_id);
+      const std::string file_name = std::string("images/frames/frame_") + frame_id_str + std::string(".ppm");
       std::ofstream outfile_stream(file_name);
 
-      std::cerr << "Rendering frame " << frame_id << " / " << total_render_frames << " at sim step " << i << " to " << file_name << std::endl;
+      std::cout << "Rendering frame " << frame_id << " / " << total_render_frames << " at sim step " << i << " to " << file_name << std::endl;
 
       std::vector<Point3> particle_positions(particles.size());
       for (int pi = 0; pi < particles.size(); ++pi)
         particle_positions[pi] = particles[pi].position;
 
-      HittableList world = fluids_box(box_size, particle_size, particle_positions);
+      HittableList world = water_in_box(box_size, particle_size, particle_positions);
       auto world_bvh = BVHNode(world, /* time0 */ 0, /* time1 */ 9999);
 
       outfile_stream << "P3\n"
                      << image_width << ' ' << image_height << "\n255\n";
 
-      // pixel values are listed in row-major order
-      for (int row = image_height - 1; row >= 0; --row) // scan from top row down (for ppm format)
+      // scan from top row down (for ppm format)
+      // pixel values are listed in row - major order
+      for (int row = image_height - 1; row >= 0; --row)
       {
         std::cerr << "\rScanlines remaining: " << row << ' ' << std::flush;
 

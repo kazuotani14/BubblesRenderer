@@ -47,6 +47,13 @@ inline int random_int(int min, int max)
   return static_cast<int>(random_double(min, max + 1));
 }
 
+inline size_t num_digits(size_t x)
+{
+  if (x == 0) // log10(zero)=-inf
+    return 1;
+  return fmax(1, floor(log10(x)) + 1);
+}
+
 // Common Headers
 #include "vec3.h"
 #include "ray.h"
