@@ -1,9 +1,3 @@
-// g++ -std=c++17 -O3 -I../src -o fluids_text_output fluids_text_output.cpp && ./fluids_text_output > particle_data.py
-// python fluids_viz.p
-
-// Implementation based on: https://lucasschuermann.com/writing/implementing-sph-in-2d
-// "Particle-Based Fluid Simulation for Interactive Applications" Muller et al 2003
-
 #include "fluids/particle.h"
 #include "timing.h"
 
