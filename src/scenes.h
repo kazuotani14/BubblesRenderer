@@ -254,8 +254,8 @@ HittableList fluids_box(double box_size, double particle_size, const std::vector
   // auto ground = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
   objects.add(make_shared<XZRect>(-double_box_size, double_box_size, -double_box_size, double_box_size, -0.1, ground));
 
-  auto water = make_shared<Lambertian>(Color(0.5, 0.5, 1.0));
-  // auto water = make_shared<Dielectric>(1.3, Color(0.9, 0.9, 1.0));
+  // auto water = make_shared<Lambertian>(Color(0.5, 0.5, 1.0));
+  auto water = make_shared<Dielectric>(1.3, Color(0.9, 0.9, 1.0));
   HittableList particles;
   for (const auto &p : particle_positions)
   {
