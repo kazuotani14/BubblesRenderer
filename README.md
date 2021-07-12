@@ -1,18 +1,18 @@
 # Bubbles Renderer
 
-Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/) + dynamics simulations.
+Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/). Name comes from the fact that this renderer pretty much only supports rendering of spheres (and boxes) at the moment. Repo also contains dynamics simulations + infra to render sim results.
 
 Most of the implementation is in headers right now, to keep things simple because I haven't gotten around to setting up a real build system yet. Instructions:
 ```
 cd examples
 
 # For rendering of hard-coded scenes
-g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp
-./ppm_output > image.ppm
+g++ -std=c++17 -O3 -I../src -o render2ppm ppm_output.cpp
+./render2ppm > image.ppm
 open image.ppm # on os x
 
 ## ... or in one command
-g++ -std=c++17 -O3 -I../src -o ppm_output ppm_output.cpp && ./ppm_output > image.ppm && open image.ppm
+g++ -std=c++17 -O3 -I../src -o render2ppm render_to_ppm.cpp && ./render2ppm > image.ppm && open image.ppm
 
 # For fluids sim rendering
 ## 2D prototype viz: set output_mode = 0

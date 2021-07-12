@@ -8,16 +8,16 @@
 * for cornell box: how to reduce noise? see "rest of your life" for importance sampling
 
 * clean up code
+  * improve timer utility: make it scoped and record to static data structure. Or just take from ethz's messer code
   * Optimize code
     * use multiple threads. What's the best way to do this?
     * try optimizing: look for hotstops with callgrind?
-  * improve timer utility: make it scoped and record to static data structure
-  * Make custom clang-format file
+  * Add clang-format file
     * references should be attached to type
     * support c++17 (i.e. `std::vector<std::shared_ptr<Hittable> >` shouldn't have a space)
+  * add unit tests?
   * turn on compiler warnings
-  * make CMake file? or try waf
+  * make make/cmake file? or try waf
 
 * future projects
-  * fluid simulation + render
   * beach sim: static sand (image texture) to start, then dynamic
