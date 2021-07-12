@@ -15,9 +15,9 @@ static constexpr double VISC = 200.; // viscosity constant
 static constexpr double R_SQ = R * R;
 static constexpr double R_CU = R * R * R;
 static constexpr double GRAVITY = 9.8; // [m/s^2]
-static constexpr double POLY6 = 315. / (64. * M_PI * pow(R, 9.));
-static constexpr double SPIKY_GRAD = -45. / (M_PI * pow(R, 6.));
-static constexpr double VISC_LAP = 45. / (M_PI * pow(R, 6.));
+static const double POLY6 = 315. / (64. * M_PI * pow(R, 9.));
+static const double SPIKY_GRAD = -45. / (M_PI * pow(R, 6.));
+static const double VISC_LAP = 45. / (M_PI * pow(R, 6.));
 
 // Initialize "block drop" scenario: cube of particles in middle of box
 // Gives a reasonable density to initialize SPH sim

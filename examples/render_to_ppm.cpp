@@ -9,7 +9,7 @@
 int main()
 {
   // Image
-  int image_width = 100;
+  int image_width = 300;
   int samples_per_pixel = 100;
   int max_depth = 50;
 

@@ -15,13 +15,17 @@
 
 int main()
 {
-  // Image
+  int output_mode = 1; // 0 = text on std::cout (see fluids_viz.py), 1 = images
+
+  // Image params; only matters for output_mode=1. Defaults are coarse
   int image_width = 100;
-  int samples_per_pixel = 200;
+  int samples_per_pixel = 100;
   int max_depth = 10;
 
   double aspect_ratio = 1.0; // this should match the scene's cam. TODO cleaner way
   int image_height = static_cast<int>(image_width / aspect_ratio);
+
+  double render_frame_dt = 0.05;
 
   // Fluid sim
   static constexpr double box_size = 700.0;
@@ -38,10 +42,6 @@ int main()
   const bool constrain_to_xy = false;
   std::cerr << "num_steps: " << num_steps << std::endl;
 
-  // Output params
-  int output_mode = 1; // 0 = text on std::cout, 1 = images
-
-  double render_frame_dt = 0.025;
   const int render_step_interval = render_frame_dt / dt;
   const int total_render_frames = num_steps / render_step_interval;
   const int max_render_id_digits = num_digits(total_render_frames);
@@ -148,7 +148,7 @@ int main()
       const int frame_id = i / render_step_interval;
       const int num_lead_zeros = max_render_id_digits - num_digits(frame_id);
       const std::string frame_id_str = std::string(num_lead_zeros, '0') + std::to_string(frame_id);
-      const std::string file_name = std::string("images/frames/frame_") + frame_id_str + std::string(".ppm");
+      const std::string file_name = std::string("examples/images/frame_") + frame_id_str + std::string(".ppm");
       std::ofstream outfile_stream(file_name);
 
       std::cout << "Rendering frame " << frame_id << " / " << total_render_frames << " at sim step " << i << " to " << file_name << std::endl;

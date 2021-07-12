@@ -17,7 +17,6 @@
     * support c++17 (i.e. `std::vector<std::shared_ptr<Hittable> >` shouldn't have a space)
   * add unit tests?
   * turn on compiler warnings
-  * make make/cmake file? or try waf
 
 * future projects
   * beach sim: static sand (image texture) to start, then dynamic
