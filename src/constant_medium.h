@@ -12,15 +12,15 @@ public:
     // density: chances of a ray scatters at every small distance as it passes through
     ConstantMedium(shared_ptr<Hittable> b, double density, shared_ptr<Texture> a)
         : boundary(b),
-          neg_inv_density(-1 / density),
-          phase_function(make_shared<Isotropic>(a))
+          phase_function(make_shared<Isotropic>(a)),
+          neg_inv_density(-1 / density)
     {
     }
 
     ConstantMedium(shared_ptr<Hittable> b, double density, const Color &c)
         : boundary(b),
-          neg_inv_density(-1 / density),
-          phase_function(make_shared<Isotropic>(c))
+          phase_function(make_shared<Isotropic>(c)),
+          neg_inv_density(-1 / density)
     {
     }
 

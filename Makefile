@@ -1,8 +1,7 @@
 CC = g++
 INCLUDE_PATH = -I./src
-CFLAGS = -std=c++17 -O3
-# -Wall -Wno-deprecated -Werror -pedantic
-# DNDEBUG
+CFLAGS = -std=c++17 -O2 -Wall
+# -Werror -DNDEBUG
 
 STATIC_RENDER = render_to_ppm
 FLUIDS_RENDER = fluids_sim

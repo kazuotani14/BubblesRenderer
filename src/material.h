@@ -16,6 +16,8 @@ public:
 
   virtual bool scatter(
       const Ray &r_in, const hit_record &rec, Color *attenuation, Ray *scattered) const = 0;
+
+  virtual ~Material() = default;
 };
 
 class Lambertian : public Material

@@ -15,22 +15,21 @@
 
 int main()
 {
-  int output_mode = 1; // 0 = text on std::cout (see fluids_viz.py), 1 = images
+  const int output_mode = 1; // 0 = text on std::cout (see fluids_viz.py), 1 = images
 
   // Image params; only matters for output_mode=1. Defaults are coarse
-  int image_width = 100;
-  int samples_per_pixel = 100;
-  int max_depth = 10;
+  const int image_width = 100;
+  const int samples_per_pixel = 100;
+  const int max_depth = 10;
 
-  double aspect_ratio = 1.0; // this should match the scene's cam. TODO cleaner way
-  int image_height = static_cast<int>(image_width / aspect_ratio);
+  const double aspect_ratio = 1.0; // this should match the scene's cam. TODO cleaner way
+  const int image_height = static_cast<int>(image_width / aspect_ratio);
 
-  double render_frame_dt = 0.05;
+  const double render_frame_dt = 0.05;
 
   // Fluid sim
-  static constexpr double box_size = 700.0;
-  static constexpr double half_box_size = 0.5 * box_size;
-  static constexpr double particle_size = 16.0;
+  const double box_size = 700.0;
+  const double particle_size = 16.0;
   Vec3 box_lb(0, 0, 0);
   Vec3 box_ub(box_size, box_size, box_size);
 

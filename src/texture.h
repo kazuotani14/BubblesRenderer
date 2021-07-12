@@ -9,6 +9,7 @@ class Texture
 {
 public:
   virtual Color value(double u, double v, const Point3 &p) const = 0;
+  virtual ~Texture() = default;
 };
 
 class SolidColor : public Texture
@@ -51,8 +52,8 @@ public:
   }
 
 public:
-  shared_ptr<Texture> odd;
   shared_ptr<Texture> even;
+  shared_ptr<Texture> odd;
 };
 
 class ImageTexture : public Texture

@@ -50,8 +50,8 @@ public:
   }
 
 public:
-  shared_ptr<Material> mp;
   double x0, x1, y0, y1, k; // k is z value
+  shared_ptr<Material> mp;
 
   std::pair<int, int> axes;
 };
