@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "common.h"
 #include "color.h"
+#include "material.h"
 #include "hittable.h"
 
 #include <iostream>

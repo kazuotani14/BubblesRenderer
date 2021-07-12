@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera.h"
 #include "common.h"
 #include "hittable_list.h"
 #include "material.h"
@@ -9,9 +10,33 @@
 #include "constant_medium.h"
 #include "bvh.h"
 
+#include <optional>
 #include <vector>
 
-HittableList random_scene()
+struct Scene
+{
+  HittableList objects;
+  std::optional<Camera> cam;
+  Color background;
+};
+
+Camera marble_scene_cam()
+{
+  Point3 lookfrom(13, 2, 3);
+  Point3 lookat(0, 0, 0);
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 20.0;
+  double aspect_ratio = 16.0 / 9.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+
+  Camera cam(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+  return cam;
+}
+
+Scene random_scene()
 {
   static constexpr double bounce_t0 = 0.0;
   static constexpr double bounce_t1 = 1.0;
@@ -73,10 +98,14 @@ HittableList random_scene()
   auto material3 = make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
   world.add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
 
-  return world;
+  Scene scene;
+  scene.objects = world;
+  scene.cam = marble_scene_cam();
+  scene.background = Color(0.7, 0.8, 1.0);
+  return scene;
 }
 
-HittableList two_spheres()
+Scene two_spheres()
 {
   HittableList objects;
 
@@ -85,19 +114,27 @@ HittableList two_spheres()
   objects.add(make_shared<Sphere>(Point3(0, -10, 0), 10, make_shared<Lambertian>(checker)));
   objects.add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<Lambertian>(checker)));
 
-  return objects;
+  Scene scene;
+  scene.objects = objects;
+  scene.cam = marble_scene_cam();
+  scene.background = Color(0.7, 0.8, 1.0);
+  return scene;
 }
 
-HittableList earth()
+Scene earth()
 {
   auto earth_texture = make_shared<ImageTexture>("images/earthmap.jpeg"); // assumes running in examples dir
   auto earth_surface = make_shared<Lambertian>(earth_texture);
   auto globe = make_shared<Sphere>(Point3(0, 0, 0), 2, earth_surface);
 
-  return HittableList(globe);
+  Scene scene;
+  scene.objects = HittableList(globe);
+  scene.cam = marble_scene_cam();
+  scene.background = Color(0.7, 0.8, 1.0);
+  return scene;
 }
 
-HittableList simple_light()
+Scene simple_light()
 {
   HittableList objects;
 
@@ -110,10 +147,39 @@ HittableList simple_light()
   objects.add(make_shared<AARect<2> >(3, 5, 1, 3, -2, difflight));
   objects.add(make_shared<Sphere>(Point3(0, 6.5, 0), 1, difflight));
 
-  return objects;
+  Scene scene;
+  scene.objects = objects;
+
+  Point3 lookfrom(26, 3, 6);
+  Point3 lookat(0, 2, 0);
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 20.0;
+  double aspect_ratio = 16.0 / 9.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+  scene.cam = Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+
+  scene.background = Color(0, 0, 0);
+  return scene;
 }
 
-HittableList cornell_box()
+Camera cornell_box_cam()
+{
+  Point3 lookfrom(278, 278, -800);
+  Point3 lookat(278, 278, 0);
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 40.0;
+  double aspect_ratio = 1.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+  return Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+}
+
+Scene cornell_box()
 {
   HittableList objects;
 
@@ -139,10 +205,14 @@ HittableList cornell_box()
   box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
   objects.add(box2);
 
-  return objects;
+  Scene scene;
+  scene.objects = objects;
+  scene.cam = cornell_box_cam();
+  scene.background = Color(0, 0, 0);
+  return scene;
 }
 
-HittableList cornell_smoke()
+Scene cornell_smoke()
 {
   HittableList objects;
 
@@ -169,10 +239,14 @@ HittableList cornell_smoke()
   objects.add(make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
   objects.add(make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
-  return objects;
+  Scene scene;
+  scene.objects = objects;
+  scene.cam = cornell_box_cam();
+  scene.background = Color(0, 0, 0);
+  return scene;
 }
 
-HittableList final_scene()
+Scene final_scene()
 {
   HittableList objects;
 
@@ -235,11 +309,26 @@ HittableList final_scene()
   auto red_texture = make_shared<Lambertian>(Color(0.7, 0.1, 0.1));
   objects.add(make_shared<Sphere>(Point3(220, 280, 300), 80, red_texture));
 
-  return objects;
+  Scene scene;
+  scene.objects = objects;
+
+  Point3 lookfrom(478, 278, -600);
+  Point3 lookat(278, 278, 0);
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 40.0;
+  double aspect_ratio = 1.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+  scene.cam = Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+
+  scene.background = Color(0, 0, 0);
+  return scene;
 }
 
 /// Transparent cube with one corner at (0, 0, 0) and opposite corner at (size, size, size)
-HittableList water_in_box(double box_size, double particle_size, const std::vector<Point3> &particle_positions)
+Scene water_in_box(double box_size, double particle_size, const std::vector<Point3> &particle_positions)
 {
   HittableList objects;
 
@@ -263,5 +352,22 @@ HittableList water_in_box(double box_size, double particle_size, const std::vect
   }
   objects.add(make_shared<BVHNode>(particles, 0, 1));
 
-  return objects;
+  Scene scene;
+  scene.objects = objects;
+
+  Point3 lookfrom(-box_size, box_size, -box_size);
+  Point3 lookat(-half_box_size, 0.75 * box_size, -half_box_size);
+  // lookfrom = Point3(-box_size, half_box_size, half_box_size);
+  // lookat = Point3(0, half_box_size, half_box_size);
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 60.0;
+  double aspect_ratio = 1.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+  scene.cam = Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+
+  scene.background = Color(0.7, 0.8, 1.0);
+  return scene;
 }

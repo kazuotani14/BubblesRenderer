@@ -22,23 +22,12 @@ int main()
 
   int output_mode = 1; // 0=text, 1=image
 
-  Vec3 vup(0, 1, 0);
-  double dist_to_focus = 10.0;
-  double aperture = 0.0;
-  double vfov = 50.0;
-
   static constexpr double box_size = 700.0;
   static constexpr double half_box_size = 0.5 * box_size;
   static constexpr double particle_size = 16.0;
-  Color background = Color(0.7, 0.8, 1.0);
-  // lookfrom = Point3(-box_size, half_box_size, half_box_size);
-  // lookat = Point3(0, half_box_size, half_box_size);
-  Point3 lookfrom = Point3(-box_size, box_size, -box_size);
-  Point3 lookat = Point3(-half_box_size, 0.8 * box_size, -half_box_size);
 
+  double aspect_ratio = 1.0; // this should match the scene's cam
   int image_height = static_cast<int>(image_width / aspect_ratio);
-
-  Camera cam(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
   // Fluids sim constants
   const double GRAVITY = 9.8;         // [m/s^2]
@@ -57,7 +46,7 @@ int main()
   Vec3 box_lb(0, 0, 0);
   Vec3 box_ub(box_size, box_size, box_size);
 
-  const int num_particles = 3000;
+  const int num_particles = 1000;
 
   const double duration = 1.0;
   const double dt = 1e-3; // 0.0008;
@@ -210,10 +199,10 @@ int main()
       for (int pi = 0; pi < particles.size(); ++pi)
         particle_positions[pi] = particles[pi].position;
 
-      HittableList world = water_in_box(box_size, particle_size, particle_positions);
-      auto world_bvh = BVHNode(world, /* time0 */ 0, /* time1 */ 9999);
+      Scene scene = water_in_box(box_size, particle_size, particle_positions);
+      auto world_bvh = BVHNode(scene.objects, /* time0 */ 0, /* time1 */ 9999);
 
-      render(outfile_stream, world_bvh, cam, image_height, image_width, background, samples_per_pixel, max_depth);
+      render(outfile_stream, world_bvh, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
     }
   }
 
