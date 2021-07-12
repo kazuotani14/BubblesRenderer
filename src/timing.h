@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -36,6 +37,12 @@ namespace timing
     return data;
   }
 
+  inline std::mutex &mutex_instance()
+  {
+    static std::mutex mut;
+    return mut;
+  }
+
   inline void print(std::ostream &out)
   {
     out << "Timing data:" << std::endl;
@@ -67,11 +74,11 @@ namespace timing
     {
       auto now = std::chrono::system_clock::now();
       double elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - t_start_).count() * 1e-6;
+      active_ = false;
 
+      std::lock_guard<std::mutex> lock(mutex_instance());
       data_instance()[tag_].total_time += elapsed;
       data_instance()[tag_].num++;
-
-      active_ = false;
     }
 
   private:
