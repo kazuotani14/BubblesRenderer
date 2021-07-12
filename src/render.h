@@ -15,23 +15,23 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, in
   if (depth <= 0)
     return Color(0, 0, 0);
 
-  timing::Timer hit_timer("ray_color/hit");
+  // timing::Timer hit_timer("ray_color/hit");
   hit_record rec;
   // If the ray hits nothing, return the background color.
   if (!world.hit(r, 0.001, infinity, &rec))
     return background;
-  hit_timer.stop();
+  // hit_timer.stop();
 
-  timing::Timer emit_timer("ray_color/emit");
+  // timing::Timer emit_timer("ray_color/emit");
   Color attenuation;
   Ray scattered;
   Color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
-  emit_timer.stop();
+  // emit_timer.stop();
 
-  timing::Timer scatter_timer("ray_color/scatter");
+  // timing::Timer scatter_timer("ray_color/scatter");
   if (!rec.mat_ptr->scatter(r, rec, &attenuation, &scattered))
     return emitted;
-  scatter_timer.stop();
+  // scatter_timer.stop();
 
   return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
 }
@@ -40,6 +40,8 @@ void render(std::ostream &out, const Hittable &world, const Camera &cam, int H, 
 {
   out << "P3\n"
       << W << ' ' << H << "\n255\n";
+
+  std::vector<Color> pixel_values(H * W);
 
   // pixel values are listed in row-major order
   for (int row = H - 1; row >= 0; --row) // scan from top row down (for ppm format)
@@ -59,9 +61,13 @@ void render(std::ostream &out, const Hittable &world, const Camera &cam, int H, 
       }
       pixel_color /= samples_per_pixel;
 
-      write_color(out, pixel_color);
+      int c_idx = col + (H - 1 - row) * W;
+      pixel_values[c_idx] = pixel_color;
     }
   }
+
+  for (const auto &c : pixel_values)
+    write_color(out, c);
 
   if (print_progress)
     std::cerr << "\nDone.\n";
