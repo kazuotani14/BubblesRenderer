@@ -5,7 +5,6 @@
 class Camera
 {
 public:
-  // focal length is implicitly 1.0
   Camera(Point3 lookfrom, Point3 lookat, Vec3 vup, double vfov_deg, double aspect_ratio,
          double aperture,
          double focus_dist, double time0_in, double time1_in)

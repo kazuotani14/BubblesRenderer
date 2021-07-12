@@ -106,31 +106,7 @@ int main()
 
   // Render
   timing::tic();
-  std::cout << "P3\n"
-            << image_width << ' ' << image_height << "\n255\n";
-
-  // pixel values are listed in row-major order
-  for (int row = image_height - 1; row >= 0; --row) // scan from top row down (for ppm format)
-  {
-    std::cerr << "\rScanlines remaining: " << row << ' ' << std::flush;
-
-    for (int col = 0; col < image_width; ++col)
-    {
-      Color pixel_color(0, 0, 0);
-      for (int s = 0; s < samples_per_pixel; ++s)
-      {
-        auto u = (col + random_double()) / (image_width - 1);
-        auto v = (row + random_double()) / (image_height - 1);
-        Ray r = cam.get_ray(u, v);
-        pixel_color += ray_color(r, background, world_bvh, max_depth);
-      }
-      pixel_color /= samples_per_pixel;
-
-      write_color(std::cout, pixel_color);
-    }
-  }
-
-  std::cerr << "\nDone.\n";
+  render(std::cout, world_bvh, cam, image_height, image_width, background, samples_per_pixel, max_depth);
   timing::toc("render");
 
   return 0;

@@ -34,7 +34,7 @@ int main()
   // lookfrom = Point3(-box_size, half_box_size, half_box_size);
   // lookat = Point3(0, half_box_size, half_box_size);
   Point3 lookfrom = Point3(-box_size, box_size, -box_size);
-  Point3 lookat = Point3(-half_box_size, 0.75 * box_size, -half_box_size);
+  Point3 lookat = Point3(-half_box_size, 0.8 * box_size, -half_box_size);
 
   int image_height = static_cast<int>(image_width / aspect_ratio);
 
@@ -213,40 +213,13 @@ int main()
       HittableList world = water_in_box(box_size, particle_size, particle_positions);
       auto world_bvh = BVHNode(world, /* time0 */ 0, /* time1 */ 9999);
 
-      outfile_stream << "P3\n"
-                     << image_width << ' ' << image_height << "\n255\n";
-
-      // scan from top row down (for ppm format)
-      // pixel values are listed in row - major order
-      for (int row = image_height - 1; row >= 0; --row)
-      {
-        std::cerr << "\rScanlines remaining: " << row << ' ' << std::flush;
-
-        for (int col = 0; col < image_width; ++col)
-        {
-          Color pixel_color(0, 0, 0);
-          for (int s = 0; s < samples_per_pixel; ++s)
-          {
-            auto u = (col + random_double()) / (image_width - 1);
-            auto v = (row + random_double()) / (image_height - 1);
-            Ray r = cam.get_ray(u, v);
-            pixel_color += ray_color(r, background, world_bvh, max_depth);
-          }
-          pixel_color /= samples_per_pixel;
-
-          write_color(outfile_stream, pixel_color);
-        }
-      }
-
-      std::cerr << std::endl;
+      render(outfile_stream, world_bvh, cam, image_height, image_width, background, samples_per_pixel, max_depth);
     }
   }
 
   if (output_mode == 0)
     std::cout << "])" << std::endl;
   timing::toc("simulate");
-
-  std::cerr << "\nDone.\n";
 
   return 0;
 }
