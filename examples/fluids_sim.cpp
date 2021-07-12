@@ -153,7 +153,7 @@ int main()
       std::cout << "Rendering frame " << frame_id << " / " << total_render_frames << " at sim step " << i << " to " << file_name << std::endl;
 
       std::vector<Point3> particle_positions(particles.size());
-      for (int pi = 0; pi < particles.size(); ++pi)
+      for (int pi = 0; pi < static_cast<int>(particles.size()); ++pi)
         particle_positions[pi] = particles[pi].position;
 
       Scene scene = water_in_box(box_size, particle_size, particle_positions);

@@ -1,6 +1,6 @@
 CC = g++
 INCLUDE_PATH = -I./src
-CFLAGS = -std=c++17 -O2 -Wall
+CFLAGS = -std=c++17 -O2 -Wall -Wextra -pedantic
 # -Werror -DNDEBUG
 
 STATIC_RENDER = render_to_ppm

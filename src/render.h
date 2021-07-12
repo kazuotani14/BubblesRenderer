@@ -37,7 +37,8 @@ void render(std::ostream &out, const Hittable &world, const Camera &cam, int H, 
   // pixel values are listed in row-major order
   for (int row = H - 1; row >= 0; --row) // scan from top row down (for ppm format)
   {
-    std::cerr << "\rScanlines remaining: " << row << ' ' << std::flush;
+    if (print_progress)
+      std::cerr << "\rScanlines remaining: " << row << ' ' << std::flush;
 
     for (int col = 0; col < W; ++col)
     {
@@ -55,5 +56,6 @@ void render(std::ostream &out, const Hittable &world, const Camera &cam, int H, 
     }
   }
 
-  std::cerr << "\nDone.\n";
+  if (print_progress)
+    std::cerr << "\nDone.\n";
 }

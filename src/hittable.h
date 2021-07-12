@@ -78,7 +78,7 @@ public:
   virtual bool hit(
       const Ray &r, double t_min, double t_max, hit_record *rec) const override;
 
-  virtual bool bounding_box(double time0, double time1, AABB *output_box) const override
+  virtual bool bounding_box(double /*time0*/, double /*time1*/, AABB *output_box) const override
   {
     *output_box = bbox;
     return hasbox;

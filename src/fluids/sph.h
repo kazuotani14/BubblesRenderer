@@ -27,19 +27,24 @@ inline std::vector<Particle> initBlockDropScenario(const Vec3 &box_lb,
                                                    int max_num_particles,
                                                    bool constrain_to_xy = false)
 {
+  for (int i = 0; i < 3; ++i)
+    assert(box_ub[i] >= box_lb[i]);
+
   std::vector<Particle> particles;
   particles.reserve(max_num_particles);
 
   auto gen_jitter = [=]()
   { return 0.1 * R * static_cast<float>(rand()) / static_cast<float>(RAND_MAX); };
 
-  for (float y = box_ub[1] / 4; y < box_ub[1] - R; y += R)
-    for (float x = box_ub[0] / 4; x <= box_ub[0] / 2; x += R)
-      for (float z = box_ub[2] / 4; z <= box_ub[2] / 2; z += R)
-        if (particles.size() < max_num_particles)
+  const Vec3 range = box_ub - box_lb;
+
+  for (float y = range[1] / 4; y < range[1] - R; y += R)
+    for (float x = range[0] / 4; x <= range[0] / 2; x += R)
+      for (float z = range[2] / 4; z <= range[2] / 2; z += R)
+        if (particles.size() < static_cast<size_t>(max_num_particles))
         {
           Particle p;
-          p.position = Vec3(x + gen_jitter(), constrain_to_xy ? 0 : y, z + gen_jitter());
+          p.position = box_lb + Vec3(x + gen_jitter(), constrain_to_xy ? 0 : y, z + gen_jitter());
           p.velocity = Vec3::Zero();
           particles.push_back(p);
         }

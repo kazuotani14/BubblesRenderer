@@ -103,7 +103,7 @@ BVHNode::BVHNode(
   box = surrounding_box(box_left, box_right);
 }
 
-bool BVHNode::bounding_box(double time0, double time1, AABB *output_box) const
+bool BVHNode::bounding_box(double /*time0*/, double /*time1*/, AABB *output_box) const
 {
   *output_box = box;
   return true;

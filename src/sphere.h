@@ -85,8 +85,11 @@ Point3 Sphere::center(double time) const
 
 bool Sphere::bounding_box(double time0, double time1, AABB *output_box) const
 {
-  Vec3 min_center(fmin(center0.x(), center1.x()), fmin(center0.y(), center1.y()), fmin(center0.z(), center1.z()));
-  Vec3 max_center(fmax(center0.x(), center1.x()), fmax(center0.y(), center1.y()), fmax(center0.z(), center1.z()));
+  const Point3 center_t0 = center(time0);
+  const Point3 center_t1 = center(time1);
+
+  Vec3 min_center(fmin(center_t0.x(), center_t1.x()), fmin(center_t0.y(), center_t1.y()), fmin(center_t0.z(), center_t1.z()));
+  Vec3 max_center(fmax(center_t0.x(), center_t1.x()), fmax(center_t0.y(), center_t1.y()), fmax(center_t0.z(), center_t1.z()));
 
   Vec3 rad3(radius, radius, radius);
 

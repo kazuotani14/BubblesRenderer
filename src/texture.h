@@ -21,7 +21,7 @@ public:
   SolidColor(double red, double green, double blue)
       : SolidColor(Color(red, green, blue)) {}
 
-  virtual Color value(double u, double v, const Vec3 &p) const override
+  virtual Color value(double /*u*/, double /*v*/, const Vec3 & /*p*/) const override
   {
     return color_value;
   }
@@ -85,7 +85,7 @@ public:
     delete data;
   }
 
-  virtual Color value(double u, double v, const Vec3 &p) const override
+  virtual Color value(double u, double v, const Vec3 & /*p*/) const override
   {
     // If we have no texture data, then return solid cyan as a debugging aid.
     if (data == nullptr)
