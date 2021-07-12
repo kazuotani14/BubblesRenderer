@@ -24,7 +24,7 @@ int main()
   const double aspect_ratio = 1.0; // this should match the scene's cam. TODO cleaner way
   const int image_height = static_cast<int>(image_width / aspect_ratio);
 
-  const double render_frame_dt = 0.05;
+  const double render_frame_dt = 0.2;
 
   // Fluid sim
   const double box_size = 700.0;
@@ -32,7 +32,7 @@ int main()
   Vec3 box_lb(0, 0, 0);
   Vec3 box_ub(box_size, box_size, box_size);
 
-  const int num_particles = 3000;
+  const int num_particles = 500;
 
   const double duration = 1.0;
   const double dt = 1e-3; // 0.0008;
@@ -93,9 +93,24 @@ int main()
     }
     dp_timer.stop();
 
+    // Compute color field
+    timing::Timer cf_timer("color_field");
+    for (int p_idx = 0; p_idx < num_particles; ++p_idx)
+    {
+      auto &p = particles[p_idx];
+      p.color_field = 0;
+
+      for (const int n_idx : neighbor_ids[p_idx])
+      {
+        const double dist_sq = (particles[n_idx].position - p.position).length_squared();
+        p.color_field += MASS / particles[n_idx].density * POLY6 * pow(R_SQ - dist_sq, 3.);
+      }
+    }
+    cf_timer.stop();
+
     // Compute total forces on each particle
     timing::Timer f_timer("forces");
-    Vec3 F_pressure, F_visc, F_g;
+    Vec3 F_pressure, F_visc, F_g, F_surface;
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
     {
       auto &p = particles[p_idx];
@@ -103,7 +118,7 @@ int main()
       F_g = Vec3(0, -GRAVITY * p.density * R_CU, 0);
 
       // compute pressure force
-      F_pressure = F_visc = Vec3::Zero();
+      F_pressure = F_visc = F_surface = Vec3::Zero();
       for (const int n_idx : neighbor_ids[p_idx])
       {
         const auto &n = particles[n_idx];
@@ -117,8 +132,33 @@ int main()
         F_visc += VISC * MASS * (n.velocity - p.velocity) / n.density * VISC_LAP * (R - dist);
       }
 
+      // compute surface tension
+      Vec3 color_field_grad = Vec3::Zero();
+      Vec3 color_field_lap = Vec3::Zero();
+      for (const int n_idx : neighbor_ids[p_idx])
+      {
+        const auto &n = particles[n_idx];
+
+        auto vec_np = n.position - p.position;
+        auto vec_np_unit = unit_vector(vec_np);
+        double dist = vec_np.length();
+        assert(dist < R);
+
+        color_field_grad += -vec_np_unit * MASS / n.density * POLY6 * -6 * dist * pow((R_SQ - dist * dist), 2.);
+        color_field_lap += -vec_np_unit * MASS / n.density * POLY6 * -6 * (pow(R, 4.) - 6 * pow(R, 2.) * pow(dist, 2.) + 5 * pow(dist, 4.));
+      }
+
+      if (color_field_grad.length() > 1e-6)
+      {
+        static constexpr double sigma = 100000.0;
+        F_surface = sigma * color_field_lap * color_field_grad / color_field_grad.length();
+
+        if (i == 0)
+          std::cout << "F_surface: " << F_surface.length() << " vs. " << F_g.length() << ", " << F_pressure.length() << ", " << F_visc.length() << std::endl;
+      }
+
       // Add up forces
-      p.force = F_g + F_pressure + F_visc;
+      p.force = F_g + F_pressure + F_visc + F_surface;
     }
     f_timer.stop();
 
