@@ -11,7 +11,6 @@ struct Particle
   double density;
   double pressure = 0.0;
   Vec3 force;
-  double color_field;
 };
 
 // SPH fluid sim cparameters/ onstants. Our sim is sensitive to parameters and initial conditions,
@@ -48,7 +47,7 @@ inline std::vector<Particle> initBlockDropScenario(const Vec3 &box_lb,
 
   const Vec3 range = box_ub - box_lb;
 
-  for (float y = 0; y < range[1] - R; y += R)
+  for (float y = range[1] / 4; y < range[1] - R; y += R)
     for (float x = range[0] / 4; x <= range[0] / 2; x += R)
       for (float z = range[2] / 4; z <= range[2] / 2; z += R)
         if (particles.size() < static_cast<size_t>(max_num_particles))
