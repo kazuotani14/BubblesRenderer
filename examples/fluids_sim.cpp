@@ -1,4 +1,3 @@
-#include "fluids/particle.h"
 #include "fluids/sph.h"
 
 #include "scenes.h"

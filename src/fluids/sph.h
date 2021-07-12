@@ -1,8 +1,17 @@
 #pragma once
 
-#include "particle.h"
+#include "common.h"
 
 #include <vector>
+
+struct Particle
+{
+  Vec3 position;
+  Vec3 velocity = Vec3::Zero();
+  double density;
+  double pressure = 0.0;
+  Vec3 force;
+};
 
 // SPH fluid sim cparameters/ onstants. Our sim is sensitive to parameters and initial conditions,
 // but these parameters have been found to give reasonable results.
