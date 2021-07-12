@@ -1,4 +1,5 @@
 #include "fluids/particle.h"
+#include "fluids/sph.h"
 
 #include "scenes.h"
 #include "bvh.h"
@@ -15,43 +16,30 @@
 int main()
 {
   // Image
-  double aspect_ratio = 1.0;
-  int image_width = 200;
+  int image_width = 100;
   int samples_per_pixel = 200;
-  int max_depth = 50;
+  int max_depth = 10;
 
-  int output_mode = 1; // 0=text, 1=image
+  double aspect_ratio = 1.0; // this should match the scene's cam. TODO cleaner way
+  int image_height = static_cast<int>(image_width / aspect_ratio);
 
+  // Fluid sim
   static constexpr double box_size = 700.0;
   static constexpr double half_box_size = 0.5 * box_size;
   static constexpr double particle_size = 16.0;
-
-  double aspect_ratio = 1.0; // this should match the scene's cam
-  int image_height = static_cast<int>(image_width / aspect_ratio);
-
-  // Fluids sim constants
-  const double GRAVITY = 9.8;         // [m/s^2]
-  const double REST_DENSITY = 1000.0; // [kg / m^3]
-  const double GAS_CONST = 2000.0;
-  const double R = 16.0; // [m]
-  const double R_SQ = R * R;
-  const double R_CU = R * R * R;
-  const double MASS = 65.0; // [kg]
-
-  const double POLY6 = 315. / (64. * M_PI * pow(R, 9.));
-  const double SPIKY_GRAD = -45. / (M_PI * pow(R, 6.));
-  const double VISC = 200.; // viscosity constant
-  const double VISC_LAP = 45. / (M_PI * pow(R, 6.));
-
   Vec3 box_lb(0, 0, 0);
   Vec3 box_ub(box_size, box_size, box_size);
 
-  const int num_particles = 1000;
+  const int num_particles = 3000;
 
   const double duration = 1.0;
   const double dt = 1e-3; // 0.0008;
   const int num_steps = duration / dt + 1;
   const bool constrain_to_xy = false;
+  std::cerr << "num_steps: " << num_steps << std::endl;
+
+  // Output params
+  int output_mode = 1; // 0 = text on std::cout, 1 = images
 
   double render_frame_dt = 0.025;
   const int render_step_interval = render_frame_dt / dt;
@@ -60,30 +48,13 @@ int main()
 
   // Initialize particles
   timing::tic();
-  std::vector<Particle> particles;
-  particles.reserve(num_particles);
-
-  // "dam break" scenario: block of particles in middle
-  for (float y = box_ub[0] / 4; y < box_ub[1] - R; y += R)
-    for (float x = box_ub[0] / 4; x <= box_ub[0] / 2; x += R)
-      for (float z = box_ub[0] / 4; z <= box_ub[0] / 2; z += R)
-        if (particles.size() < num_particles)
-        {
-          Particle p;
-          auto gen_jitter = []()
-          { return static_cast<float>(rand()) / static_cast<float>(RAND_MAX); };
-          p.position = Vec3(x + gen_jitter(), constrain_to_xy ? 0 : y, z + gen_jitter());
-          p.velocity = Vec3::Zero();
-          particles.push_back(p);
-        }
+  std::vector<Particle> particles = initBlockDropScenario(box_lb, box_ub, R, num_particles, constrain_to_xy);
   timing::toc("initialization");
 
   // Simulate
   timing::tic();
 
-  std::cerr << "num_steps: " << num_steps << std::endl;
-
-  // hacky output for viz; TODO write images at each frame
+  // hacky output for viz/debugging
   if (output_mode == 0)
   {
     std::cout << "num_particles = " << num_particles << std::endl;
@@ -94,8 +65,6 @@ int main()
   // Render
   for (int i = 0; i < num_steps; ++i)
   {
-    const double t = i * dt;
-
     // Find neighbors
     std::vector<std::vector<int> > neighbor_ids(num_particles);
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
@@ -149,6 +118,7 @@ int main()
       p.force = F_g + F_pressure + F_visc;
     }
 
+    // Integrate forces into motion
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
     {
       auto &p = particles[p_idx];
@@ -158,34 +128,22 @@ int main()
       p.velocity += dt * p.force / p.density;
       p.position += dt * p.velocity;
 
-      // hacky impulse-based collisions for box constraints
-      const double restitution_coeff = 0.5;
-
-      for (int box_axis = 0; box_axis <= 2; ++box_axis)
-      {
-        if (p.position[box_axis] < box_lb[box_axis] + R)
-        {
-          p.velocity[box_axis] = +abs(p.velocity[box_axis]) * restitution_coeff;
-          p.position[box_axis] = box_lb[box_axis] + R;
-        }
-
-        if (p.position[box_axis] > box_ub[box_axis] - R)
-        {
-          p.velocity[box_axis] = -abs(p.velocity[box_axis]) * restitution_coeff;
-          p.position[box_axis] = box_ub[box_axis] - R;
-        }
-      }
+      enforceBoxConstraints(p, R, box_lb, box_ub);
 
       if (constrain_to_xy)
-        p.position[2] = 0.0;
-
-      if (output_mode == 0)
       {
-        std::cout << "[" << p.position << "]," << std::endl;
+        p.position[2] = 0.0;
+        p.velocity[2] = 0.0;
       }
     }
 
-    if (output_mode == 1 && i % render_step_interval == 0)
+    // Output results
+    if (output_mode == 0)
+    {
+      for (const auto &p : particles)
+        std::cout << "[" << p.position << "]," << std::endl;
+    }
+    else if (output_mode == 1 && i % render_step_interval == 0)
     {
       const int frame_id = i / render_step_interval;
       const int num_lead_zeros = max_render_id_digits - num_digits(frame_id);
