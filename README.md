@@ -11,7 +11,7 @@ make
 
 # Fluids sim + rendering. Use imagemagick to create gif
 ./fluids_sim
-convert -delay 20 -loop 0 examples/images/frames/frame_*.ppm fluid_sim.gif
+convert -delay 20 -loop 0 examples/images/frame_*.ppm fluid_sim.gif
 ```
 
 See TODOs.md for future work.

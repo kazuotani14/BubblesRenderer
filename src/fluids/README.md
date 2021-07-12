@@ -1,6 +1,8 @@
 Current fluids simulation implemention uses Smoothed Particle Hydrodynamics (SPH) algorithm, with implementation based on [this blog post](https://lucasschuermann.com/writing/implementing-sph-in-2d) (original paper: "Particle-Based Fluid Simulation for Interactive Applications" Muller et al 2003). Finding a set of parameters / initial density was difficult, so I mostly copied from the blog post.
 
-TODO add more notes on lessons learned about other fluid sim methods
+Fluids equations: [this video](https://www.youtube.com/watch?v=qsYE1wMEMPA) was helpful.
+* Conservation of mass (advection)
+* Conservation of momentum (Navier-Stokes equation)
 
 ### References
 

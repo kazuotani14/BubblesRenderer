@@ -2,13 +2,16 @@
 
 * for cornell box: how to reduce noise? see "rest of your life" for importance sampling
 
+* Improve SPH
+  * Surface tension: implement color field gradient + marching cubes (requires triangle mesh rendering)
+
 * speed up bottlenecks
   * rendering: hit
       * parallelize samples or pixels: threads, GPU
       * profile and optimize individual primitives' hit methods
-  * fluids: finding neighbors
-    * spatial hash
-    * At current scale, rendering takes much more time
+  * fluids: at current scale, rendering takes much more time
+    * finding neighbors: implement spatial hash table
+    * better numerical integration scheme -> use larger timesteps
 
 * Ray tracing: the next week
   * section 9 (volumes) -- derive the ConstantMedium::hit math
