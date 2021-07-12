@@ -26,3 +26,4 @@
 
 * future projects
   * beach sim: static sand (image texture) to start, then dynamic
+  * soft body sim
