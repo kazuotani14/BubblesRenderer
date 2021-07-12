@@ -70,5 +70,7 @@ int main()
   render(std::cout, world_bvh, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
   timing::toc("render");
 
+  timing::print(std::cerr);
+
   return 0;
 }

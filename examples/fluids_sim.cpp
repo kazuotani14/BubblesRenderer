@@ -46,12 +46,12 @@ int main()
   const int max_render_id_digits = num_digits(total_render_frames);
 
   // Initialize particles
-  timing::tic();
+  timing::Timer init_timer("initialization");
   std::vector<Particle> particles = initBlockDropScenario(box_lb, box_ub, R, num_particles, constrain_to_xy);
-  timing::toc("initialization");
+  init_timer.stop();
 
   // Simulate
-  timing::tic();
+  timing::Timer sim_timer("full_sim");
 
   // hacky output for viz/debugging
   if (output_mode == 0)
@@ -66,14 +66,17 @@ int main()
   {
     // Find neighbors
     std::vector<std::vector<int> > neighbor_ids(num_particles);
+    timing::Timer n_timer("find_neighbors");
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
       for (int n_idx = 0; n_idx < num_particles; ++n_idx)
       {
         if (n_idx != p_idx && (particles[p_idx].position - particles[n_idx].position).length_squared() < R_SQ)
           neighbor_ids[p_idx].push_back(n_idx);
       }
+    n_timer.stop();
 
     // Compute density and pressure
+    timing::Timer dp_timer("density_pressure");
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
     {
       auto &p = particles[p_idx];
@@ -89,8 +92,10 @@ int main()
       p.density = fmax(p.density, 1e-20); // avoid division by zero later
       p.pressure = GAS_CONST * (p.density - REST_DENSITY);
     }
+    dp_timer.stop();
 
     // Compute total forces on each particle
+    timing::Timer f_timer("forces");
     Vec3 F_pressure, F_visc, F_g;
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
     {
@@ -116,8 +121,10 @@ int main()
       // Add up forces
       p.force = F_g + F_pressure + F_visc;
     }
+    f_timer.stop();
 
     // Integrate forces into motion
+    timing::Timer i_timer("integration");
     for (int p_idx = 0; p_idx < num_particles; ++p_idx)
     {
       auto &p = particles[p_idx];
@@ -135,8 +142,10 @@ int main()
         p.velocity[2] = 0.0;
       }
     }
+    i_timer.stop();
 
     // Output results
+    timing::Timer o_timer("output");
     if (output_mode == 0)
     {
       for (const auto &p : particles)
@@ -161,11 +170,14 @@ int main()
 
       render(outfile_stream, world_bvh, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
     }
+    o_timer.stop();
   }
 
   if (output_mode == 0)
     std::cout << "])" << std::endl;
-  timing::toc("simulate");
+
+  sim_timer.stop();
+  timing::print(std::cerr);
 
   return 0;
 }

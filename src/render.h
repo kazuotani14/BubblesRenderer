@@ -5,6 +5,7 @@
 #include "color.h"
 #include "material.h"
 #include "hittable.h"
+#include "timing.h"
 
 #include <iostream>
 
@@ -14,17 +15,23 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, in
   if (depth <= 0)
     return Color(0, 0, 0);
 
+  timing::Timer hit_timer("ray_color/hit");
   hit_record rec;
   // If the ray hits nothing, return the background color.
   if (!world.hit(r, 0.001, infinity, &rec))
     return background;
+  hit_timer.stop();
 
+  timing::Timer emit_timer("ray_color/emit");
   Color attenuation;
   Ray scattered;
   Color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+  emit_timer.stop();
 
+  timing::Timer scatter_timer("ray_color/scatter");
   if (!rec.mat_ptr->scatter(r, rec, &attenuation, &scattered))
     return emitted;
+  scatter_timer.stop();
 
   return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
 }
