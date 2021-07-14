@@ -8,7 +8,7 @@ struct hit_record;
 class Material
 {
 public:
-  virtual Color emitted(double /*u*/, double /*v*/, const Point3 & /*p*/) const
+  virtual Color emitted(const Ray &r_in, const hit_record &rec, double /*u*/, double /*v*/, const Point3 & /*p*/) const
   {
     // basic materials are not lights
     return Color(0, 0, 0);
@@ -117,9 +117,12 @@ public:
     return false;
   }
 
-  virtual Color emitted(double u, double v, const Point3 &p) const override
+  virtual Color emitted(const Ray &r_in, const hit_record &rec, double u, double v, const Point3 &p) const override
   {
-    return emit->value(u, v, p);
+    if (rec.front_face)
+      return emit->value(u, v, p);
+    else
+      return Color(0, 0, 0);
   }
 
 public:

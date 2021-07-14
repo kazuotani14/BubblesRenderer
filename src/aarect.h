@@ -73,10 +73,9 @@ bool AARect<AlignedAxis>::hit(const Ray &r, double t_min, double t_max, hit_reco
   rec->t = t;
 
   Vec3 pos_normal(0, 0, 0);
-  pos_normal[AlignedAxis] = 1;
+  pos_normal[AlignedAxis] = 1; // arbitrary
 
-  auto outward_normal = (r.origin()[AlignedAxis] - k) > 0 ? pos_normal : -pos_normal;
-  rec->set_face_normal(r, outward_normal);
+  rec->set_face_normal(r, pos_normal);
   rec->mat_ptr = mp;
   rec->p = r.at(t);
   return true;

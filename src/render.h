@@ -27,7 +27,7 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
   // timing::Timer emit_timer("ray_color/emit");
   Color attenuation;
   Ray scattered;
-  Color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+  Color emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
   // emit_timer.stop();
 
   // timing::Timer scatter_timer("ray_color/scatter");

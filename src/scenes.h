@@ -190,10 +190,12 @@ Scene cornell_box()
 
   objects.add(make_shared<YZRect>(0, 555, 0, 555, 555, green));
   objects.add(make_shared<YZRect>(0, 555, 0, 555, 0, red));
-  objects.add(make_shared<XZRect>(213, 343, 227, 332, 554, light));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 0, white));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 555, white));
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+  // make sure light is pointing only down
+  objects.add(make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 554, light)));
 
   shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
   box1 = make_shared<RotateY>(box1, 15);
