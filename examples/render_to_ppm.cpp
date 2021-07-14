@@ -13,7 +13,7 @@ int main()
   int samples_per_pixel = 100;
   int max_depth = 50;
 
-  int scene_id = 0;
+  int scene_id = 4;
 
   // Build world
   timing::tic();
