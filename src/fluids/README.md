@@ -4,7 +4,9 @@ Fluids equations: [this video](https://www.youtube.com/watch?v=qsYE1wMEMPA) was 
 * Conservation of mass (advection)
 * Conservation of momentum (Navier-Stokes equation)
 
-Another popular fluid simulation algorithm is PIC/FLIP. See [Bridson book "Fluid Simulation for Computer Graphics"](https://www.amazon.com/gp/product/1568813260/ref=x_gr_w_bb_glide_sin?ie=UTF8&tag=x_gr_w_bb_glide_sin-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=1568813260&SubscriptionId=1MGPYB6YW3HWK55XCGG2), [Bridson SIGGRAPH tutorial notes](https://www.cs.ubc.ca/~rbridson/fluidsimulation/fluids_notes.pdf) for reference. It seems like this method has been more popular than SPH, so there are lots of other helpful [references](https://cg.informatik.uni-freiburg.de/intern/seminar/gridFluids_fluid_flow_for_the_rest_of_us.pdf) and [example](https://github.com/austinEng/WebGL-PIC-FLIP-Fluid) [implementations](https://github.com/rlguy/GridFluidSim3D).
+See bottom of [this page](https://nialltl.neocities.org/articles/mpm_guide.html) for a great overview of other fluid sim algos.
+
+One popular one is PIC/FLIP. See [Bridson book "Fluid Simulation for Computer Graphics"](https://www.amazon.com/gp/product/1568813260/ref=x_gr_w_bb_glide_sin?ie=UTF8&tag=x_gr_w_bb_glide_sin-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=1568813260&SubscriptionId=1MGPYB6YW3HWK55XCGG2), [Bridson SIGGRAPH tutorial notes](https://www.cs.ubc.ca/~rbridson/fluidsimulation/fluids_notes.pdf) for reference. It seems like this method has been more popular than SPH, so there are lots of other helpful [references](https://cg.informatik.uni-freiburg.de/intern/seminar/gridFluids_fluid_flow_for_the_rest_of_us.pdf) and [example](https://github.com/austinEng/WebGL-PIC-FLIP-Fluid) [implementations](https://github.com/rlguy/GridFluidSim3D).
 
 ### References
 

@@ -1,6 +1,10 @@
 # TODOs
 
 * for cornell box: how to reduce noise? see "rest of your life" for importance sampling
+  * doxy core interfaces; it's getting confusing
+  * make sure all types of hittables/materials are still supported
+    * put support for motion blur back into interfaces (Sphere class is the only one for now)
+  * find where nans are coming from (see 12.6 for our current workaround)
 
 * Improve SPH
   * Surface tension: implement color field gradient + marching cubes (requires triangle mesh rendering)
