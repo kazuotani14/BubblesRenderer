@@ -51,14 +51,27 @@ void render(std::ostream &out, const Hittable &world, shared_ptr<Hittable> light
       for (int col = 0; col < W; ++col)
       {
         Color pixel_color(0, 0, 0);
+        int num_rejected = 0;
         for (int s = 0; s < samples_per_pixel; ++s)
         {
           auto u = (col + random_double()) / (W - 1);
           auto v = (row + random_double()) / (H - 1);
           Ray r = cam.get_ray(u, v);
+
+          // Color sample_color = ray_color(r, background, world, lights, max_depth);
+
+          // Hack to try to get rid of speckles
+          // if (isnan(sample_color[0]) || isnan(sample_color[1]) || isnan(sample_color[2]) || sample_color[0] > 15 || sample_color[1] > 15 || sample_color[2] > 15)
+          // {
+          //   ++num_rejected;
+          //   continue;
+          // }
+
+          // pixel_color += sample_color;
+
           pixel_color += ray_color(r, background, world, lights, max_depth);
         }
-        pixel_color /= samples_per_pixel;
+        pixel_color /= (samples_per_pixel - num_rejected);
 
         // pixel values are listed in row-major order in ppm format, from top down
         int c_idx = col + (H - 1 - row) * W;
