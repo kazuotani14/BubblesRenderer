@@ -188,8 +188,8 @@ Scene cornell_box()
   auto green = make_shared<Lambertian>(Color(.12, .45, .15));
   auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
 
-  objects.add(make_shared<YZRect>(0, 555, 0, 555, 555, green));
-  objects.add(make_shared<YZRect>(0, 555, 0, 555, 0, red));
+  objects.add(make_shared<YZRect>(0, 555, 0, 555, 555, red));
+  objects.add(make_shared<YZRect>(0, 555, 0, 555, 0, green));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 0, white));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 555, white));
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
