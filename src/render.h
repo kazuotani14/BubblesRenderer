@@ -11,7 +11,7 @@
 #include <mutex>
 #include <thread>
 
-Color ray_color(const Ray &r, const Color &background, const Hittable &world, int depth)
+Color ray_color(const Ray &r, const Color &background, const Hittable &world, shared_ptr<Hittable> lights, int depth)
 {
   // If we've exceeded the ray bounce limit, no more light is gathered.
   if (depth <= 0)
@@ -35,10 +35,10 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, in
     return emitted;
   // scatter_timer.stop();
 
-  return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
+  return emitted + attenuation * ray_color(scattered, background, world, lights, depth - 1);
 }
 
-void render(std::ostream &out, const Hittable &world, const Camera &cam, int H, int W, const Color &background, int samples_per_pixel, int max_depth, int num_threads = std::thread::hardware_concurrency(), bool print_progress = true)
+void render(std::ostream &out, const Hittable &world, shared_ptr<Hittable> lights, const Camera &cam, int H, int W, const Color &background, int samples_per_pixel, int max_depth, int num_threads = std::thread::hardware_concurrency(), bool print_progress = true)
 {
   std::vector<Color> pixel_values(H * W);
   int num_pixels_done = 0;
@@ -56,7 +56,7 @@ void render(std::ostream &out, const Hittable &world, const Camera &cam, int H, 
           auto u = (col + random_double()) / (W - 1);
           auto v = (row + random_double()) / (H - 1);
           Ray r = cam.get_ray(u, v);
-          pixel_color += ray_color(r, background, world, max_depth);
+          pixel_color += ray_color(r, background, world, lights, max_depth);
         }
         pixel_color /= samples_per_pixel;
 

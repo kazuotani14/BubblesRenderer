@@ -66,8 +66,10 @@ int main()
   // Render
   int image_height = static_cast<int>(image_width / scene.cam->aspect_ratio);
 
+  auto lights = shared_ptr<Hittable>();
+
   timing::tic();
-  render(std::cout, world_bvh, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
+  render(std::cout, world_bvh, lights, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
   timing::toc("render");
 
   timing::print(std::cerr);

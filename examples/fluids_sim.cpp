@@ -167,7 +167,9 @@ int main()
       Scene scene = water_in_box(box_size, particle_size, particle_positions);
       auto world_bvh = BVHNode(scene.objects, /* time0 */ 0, /* time1 */ 9999);
 
-      render(outfile_stream, world_bvh, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
+      auto lights = shared_ptr<Hittable>();
+
+      render(outfile_stream, world_bvh, lights, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
     }
     o_timer.stop();
   }
