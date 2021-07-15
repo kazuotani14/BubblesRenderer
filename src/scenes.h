@@ -18,6 +18,10 @@ struct Scene
   HittableList objects;
   std::optional<Camera> cam;
   Color background;
+
+  // This shouldn't really be called "lights"; these should be called "bias_towards" or something
+  // e.g. in the cornell box hard case, we bias towards the glass sphere
+  shared_ptr<Hittable> lights = nullptr;
 };
 
 Camera marble_scene_cam()
@@ -123,7 +127,7 @@ Scene two_spheres()
 
 Scene earth()
 {
-  auto earth_texture = make_shared<ImageTexture>("images/earthmap.jpeg"); // assumes running in examples dir
+  auto earth_texture = make_shared<ImageTexture>("examples/images/earthmap.jpeg"); // assumes running in examples dir
   auto earth_surface = make_shared<Lambertian>(earth_texture);
   auto globe = make_shared<Sphere>(Point3(0, 0, 0), 2, earth_surface);
 
@@ -195,6 +199,48 @@ Scene cornell_box()
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
   // make sure light is pointing only down
+  shared_ptr<Hittable> ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 554, light));
+  objects.add(ceiling_light);
+
+  shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
+  box1 = make_shared<RotateY>(box1, 15);
+  box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+  objects.add(box1);
+
+  shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
+  box2 = make_shared<RotateY>(box2, -18);
+  box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+  objects.add(box2);
+
+  Scene scene;
+  scene.objects = objects;
+  scene.cam = cornell_box_cam();
+  scene.background = Color(0, 0, 0);
+
+  auto lights = std::make_shared<HittableList>();
+  lights->add(ceiling_light);
+  scene.lights = lights;
+
+  return scene;
+}
+
+// difficult (for clean rendering) version of cornell box, with mirror box and glass sphere
+Scene cornell_box_hard()
+{
+  HittableList objects;
+
+  auto red = make_shared<Lambertian>(Color(.65, .05, .05));
+  auto white = make_shared<Lambertian>(Color(.73, .73, .73));
+  auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+  auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
+
+  objects.add(make_shared<YZRect>(0, 555, 0, 555, 555, red));
+  objects.add(make_shared<YZRect>(0, 555, 0, 555, 0, green));
+  objects.add(make_shared<XZRect>(0, 555, 0, 555, 0, white));
+  objects.add(make_shared<XZRect>(0, 555, 0, 555, 555, white));
+  objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+  // make sure light is pointing only down
   shared_ptr<Hittable> ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 354, light));
   ceiling_light = make_shared<RotateY>(ceiling_light, 15);
   ceiling_light = make_shared<Translate>(ceiling_light, Vec3(0, +200, 0));
@@ -203,24 +249,34 @@ Scene cornell_box()
   shared_ptr<Material>
       aluminum = make_shared<Metal>(Color(0.8, 0.85, 0.88), 0);
   shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), aluminum);
-
-  // shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
   box1 = make_shared<RotateY>(box1, 15);
   box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
   objects.add(box1);
 
   auto glass = make_shared<Dielectric>(1.5);
-  objects.add(make_shared<Sphere>(Point3(190, 90, 190), 90, glass));
-
-  // shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
-  // box2 = make_shared<RotateY>(box2, -18);
-  // box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
-  // objects.add(box2);
+  auto glass_sphere = make_shared<Sphere>(Point3(190, 90, 190), 90, glass);
+  objects.add(glass_sphere);
 
   Scene scene;
   scene.objects = objects;
   scene.cam = cornell_box_cam();
   scene.background = Color(0, 0, 0);
+
+  auto lights = std::make_shared<HittableList>();
+  lights->add(ceiling_light);
+  lights->add(glass_sphere);
+
+  // Attempt 1 at reducing noise: not good enough; adds a bunch of noise
+  // lights->add(box1);
+
+  // Attempt 2: works a bit better than not sampling toward box at all, probably because the region of interest on the box is the top surface (reflects a bunch of the light)
+  shared_ptr<Hittable> top_of_box = make_shared<XZRect>(0, 165, 0, 165, 330, nullptr);
+  top_of_box = make_shared<RotateY>(top_of_box, 15);
+  top_of_box = make_shared<Translate>(top_of_box, Vec3(265, 0, 295));
+  lights->add(top_of_box);
+
+  scene.lights = lights;
+
   return scene;
 }
 
@@ -235,10 +291,12 @@ Scene cornell_smoke()
 
   objects.add(make_shared<YZRect>(0, 555, 0, 555, 555, green));
   objects.add(make_shared<YZRect>(0, 555, 0, 555, 0, red));
-  objects.add(make_shared<XZRect>(113, 443, 127, 432, 554, light));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 555, white));
   objects.add(make_shared<XZRect>(0, 555, 0, 555, 0, white));
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+  auto ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(113, 443, 127, 432, 554, light));
+  objects.add(ceiling_light);
 
   shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
   box1 = make_shared<RotateY>(box1, 15);
@@ -255,6 +313,11 @@ Scene cornell_smoke()
   scene.objects = objects;
   scene.cam = cornell_box_cam();
   scene.background = Color(0, 0, 0);
+
+  auto lights = std::make_shared<HittableList>();
+  lights->add(ceiling_light);
+  scene.lights = lights;
+
   return scene;
 }
 
@@ -315,7 +378,7 @@ Scene final_scene()
   boundary = make_shared<Sphere>(Point3(0, 0, 0), 5000, make_shared<Dielectric>(1.5));
   objects.add(make_shared<ConstantMedium>(boundary, .0001, Color(1, 1, 1)));
 
-  auto emat = make_shared<Lambertian>(make_shared<ImageTexture>("images/earthmap.jpeg"));
+  auto emat = make_shared<Lambertian>(make_shared<ImageTexture>("examples/images/earthmap.jpeg"));
   objects.add(make_shared<Sphere>(Point3(400, 200, 400), 100, emat));
   // auto pertext = make_shared<noise_texture>(0.1);
   auto red_texture = make_shared<Lambertian>(Color(0.7, 0.1, 0.1));
@@ -336,6 +399,7 @@ Scene final_scene()
   scene.cam = Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
 
   scene.background = Color(0, 0, 0);
+
   return scene;
 }
 

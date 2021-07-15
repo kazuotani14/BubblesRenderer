@@ -34,17 +34,7 @@ public:
   virtual Vec3 random(const Vec3 &o) const override
   {
     auto int_size = static_cast<int>(objects.size());
-
-    int rand_idx = random_int(0, int_size - 1);
-
-    // hard-coded dependence on being above box
-    //
-    if (rand_idx == 2 && (o.y() > 550 || o.y() < 335))
-    {
-      rand_idx = 0;
-    }
-
-    return objects[rand_idx]->random(o);
+    return objects[random_int(0, int_size - 1)]->random(o);
   }
 
 public:
