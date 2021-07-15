@@ -118,6 +118,9 @@ public:
     return hasbox;
   }
 
+  virtual double pdf_value(const Point3 &o, const Vec3 &v) const override;
+  virtual Vec3 random(const Point3 &o) const override;
+
 public:
   shared_ptr<Hittable> ptr;
   double sin_theta;
@@ -191,6 +194,28 @@ bool RotateY::hit(const Ray &r, double t_min, double t_max, hit_record *rec) con
   rec->set_face_normal(rotated_r, rotate(rec->normal));
 
   return true;
+}
+
+double RotateY::pdf_value(const Point3 &o, const Vec3 &v) const
+{
+  hit_record rec;
+  if (!this->hit(Ray(o, v), 0.001, infinity, &rec))
+    return 0;
+
+  auto origin = counter_rotate(o);
+  auto direction = counter_rotate(v);
+
+  Ray rotated_r(origin, direction, 0.0);
+
+  return ptr->pdf_value(rotated_r.origin(), rotated_r.direction());
+}
+
+Vec3 RotateY::random(const Point3 &o) const
+{
+  auto origin = counter_rotate(o);
+  auto vec = ptr->random(origin);
+  auto rotated_vec = rotate(vec);
+  return rotated_vec;
 }
 
 class FlipFace : public Hittable

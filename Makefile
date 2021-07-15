@@ -16,8 +16,9 @@ clean:
 
 # Note to self: use -B to force rebuild
 run_static_render:
-	make $(STATIC_RENDER) -B
-	./render_to_ppm > image.ppm && open image.ppm
+	make $(STATIC_RENDER) -B && ./render_to_ppm > image.ppm && open image.ppm
+run_tests:
+	make tests -B && ./hittable_tests # TODO figure out how to loop over all targets in TESTS
 
 $(STATIC_RENDER): examples/$(STATIC_RENDER).cpp
 	$(CC) $(INCLUDE_PATH) $(CFLAGS) -o $(STATIC_RENDER) examples/$(STATIC_RENDER).cpp

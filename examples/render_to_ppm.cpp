@@ -72,9 +72,12 @@ int main()
   // auto lights = nullptr;
 
   auto lights = std::make_shared<HittableList>();
-  auto ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 354, nullptr)); // 554 -> 354
+  shared_ptr<Hittable> ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 354, nullptr)); // 554 -> 354
   // lights->add(ceiling_light);
+
+  ceiling_light = make_shared<RotateY>(ceiling_light, 15);
   lights->add(make_shared<Translate>(ceiling_light, Vec3(0, +200, 0)));
+
   // lights->add(make_shared<Sphere>(Point3(190, 90, 190), 90, nullptr));
 
   // shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), nullptr);

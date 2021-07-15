@@ -195,8 +195,10 @@ Scene cornell_box()
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
   // make sure light is pointing only down
-  auto ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 354, light));
-  objects.add(make_shared<Translate>(ceiling_light, Vec3(0, +200, 0)));
+  shared_ptr<Hittable> ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 354, light));
+  ceiling_light = make_shared<RotateY>(ceiling_light, 15);
+  ceiling_light = make_shared<Translate>(ceiling_light, Vec3(0, +200, 0));
+  objects.add(ceiling_light);
 
   shared_ptr<Material>
       aluminum = make_shared<Metal>(Color(0.8, 0.85, 0.88), 0);
