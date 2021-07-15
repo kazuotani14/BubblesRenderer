@@ -102,6 +102,7 @@ bool Sphere::bounding_box(double time0, double time1, AABB *output_box) const
       max_center + rad3);
   return true;
 }
+
 double Sphere::pdf_value(const Point3 &o, const Vec3 &v) const
 {
   hit_record rec;

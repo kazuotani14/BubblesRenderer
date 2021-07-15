@@ -3,6 +3,8 @@
 #include "common.h"
 #include "orthonormal_bases.h"
 
+#include <vector>
+
 /// Return random vector in hemisphere wrt z axis
 inline Vec3 random_cosine_direction()
 {
@@ -82,29 +84,29 @@ public:
   Point3 o;
 };
 
-// TODO handle arbitrary number of PDFs and weightings
 class MixturePDF : public PDF
 {
 public:
-  MixturePDF(shared_ptr<PDF> p0, shared_ptr<PDF> p1) : p(2)
+  // Assume uniform weighting for now
+  MixturePDF(std::vector<shared_ptr<PDF> > pdfs) : p(pdfs), weight(1.0 / pdfs.size())
   {
-    p[0] = p0;
-    p[1] = p1;
+    assert(!pdfs.empty());
   }
 
   virtual double value(const Vec3 &direction) const override
   {
-    return 0.5 * p[0]->value(direction) + 0.5 * p[1]->value(direction);
+    double prob = 0.0;
+    for (size_t i = 0; i < p.size(); ++i)
+      prob += weight * p[i]->value(direction);
+    return prob;
   }
 
   virtual Vec3 generate() const override
   {
-    if (random_double() < 0.5)
-      return p[0]->generate();
-    else
-      return p[1]->generate();
+    return p[random_int(0, p.size() - 1)]->generate();
   }
 
 public:
   std::vector<shared_ptr<PDF> > p;
+  double weight;
 };

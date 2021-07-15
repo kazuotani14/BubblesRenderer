@@ -35,7 +35,7 @@ public:
   // Compute probability of sampling a given vector from random(o) method
   virtual double pdf_value(const Point3 & /*origin*/, const Vec3 & /*v*/) const
   {
-    std::cerr << "Warning: you are using importance sampling on an unsupported derived class" << std::endl;
+    std::cerr << "Warning: you are calling pdf_value on an unsupported derived class" << std::endl;
     return 0.0;
   }
 
@@ -43,7 +43,7 @@ public:
   // TODO consider if this should instead just sample a random point within Hittable, and leave the origin subtraction for caller
   virtual Vec3 random(const Vec3 & /*origin*/) const
   {
-    std::cerr << "Warning: you are using importance sampling on an unsupported derived class" << std::endl;
+    std::cerr << "Warning: you are calling random on an unsupported derived class" << std::endl;
     return Vec3(1, 0, 0);
   }
 };
@@ -91,7 +91,7 @@ bool Translate::bounding_box(double time0, double time1, AABB *output_box) const
 class RotateY : public Hittable
 {
 public:
-  RotateY(shared_ptr<Hittable> p, double angle);
+  RotateY(shared_ptr<Hittable> p, double angle_degrees);
 
   virtual bool hit(
       const Ray &r, double t_min, double t_max, hit_record *rec) const override;
@@ -110,9 +110,9 @@ public:
   AABB bbox;
 };
 
-RotateY::RotateY(shared_ptr<Hittable> p, double angle) : ptr(p)
+RotateY::RotateY(shared_ptr<Hittable> p, double angle_degrees) : ptr(p)
 {
-  auto radians = degrees_to_radians(angle);
+  auto radians = degrees_to_radians(angle_degrees);
   sin_theta = sin(radians);
   cos_theta = cos(radians);
 

@@ -41,7 +41,7 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
 
   // Importance sampling: scatter pdf of hit material + sample towards lights
   auto lights_pdf = make_shared<HittablePDF>(lights, rec.p);
-  MixturePDF mixed_pdf(lights_pdf, srec.pdf_ptr);
+  MixturePDF mixed_pdf({lights_pdf, srec.pdf_ptr});
 
   auto scattered = Ray(rec.p, mixed_pdf.generate(), r.time());
   const double likelihood_ratio = srec.pdf_ptr->value(scattered.direction()) / mixed_pdf.value(scattered.direction());
