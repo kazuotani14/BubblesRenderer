@@ -40,8 +40,10 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
     return srec.attenuation * ray_color(srec.specular_ray, background, world, lights, depth - 1);
 
   // Importance sampling: scatter pdf of hit material + sample towards lights
-  auto lights_pdf = make_shared<HittablePDF>(lights, rec.p);
-  MixturePDF mixed_pdf({lights_pdf, srec.pdf_ptr});
+  std::vector<shared_ptr<PDF> > pdfs = {srec.pdf_ptr};
+  if (lights != nullptr)
+    pdfs.push_back(make_shared<HittablePDF>(lights, rec.p));
+  MixturePDF mixed_pdf(pdfs);
 
   auto scattered = Ray(rec.p, mixed_pdf.generate(), r.time());
   const double likelihood_ratio = srec.pdf_ptr->value(scattered.direction()) / mixed_pdf.value(scattered.direction());
