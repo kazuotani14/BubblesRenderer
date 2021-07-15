@@ -92,12 +92,10 @@ bool Translate::bounding_box(double time0, double time1, AABB *output_box) const
 
 double Translate::pdf_value(const Point3 &o, const Vec3 &v) const
 {
-  const Point3 moved_o = o - offset;
-
   hit_record rec;
-  if (!this->hit(Ray(moved_o, v), 0.001, infinity, &rec))
+  if (!this->hit(Ray(o, v), 0.001, infinity, &rec))
     return 0;
-  return ptr->pdf_value(moved_o, v);
+  return ptr->pdf_value(o - offset, v);
 }
 
 Vec3 Translate::random(const Point3 &o) const
@@ -211,6 +209,16 @@ public:
   virtual bool bounding_box(double time0, double time1, AABB *output_box) const override
   {
     return ptr->bounding_box(time0, time1, output_box);
+  }
+
+  virtual double pdf_value(const Point3 &o, const Vec3 &v) const override
+  {
+    return ptr->pdf_value(o, v);
+  }
+
+  virtual Vec3 random(const Point3 &o) const override
+  {
+    return ptr->random(o);
   }
 
 public:

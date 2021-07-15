@@ -15,8 +15,8 @@ clean:
 	rm -f $(ALL_TARGETS) $(TESTS)
 
 # Note to self: use -B to force rebuild
-static_render:
-	rm $(STATIC_RENDER); make $(STATIC_RENDER)
+run_static_render:
+	make $(STATIC_RENDER) -B
 	./render_to_ppm > image.ppm && open image.ppm
 
 $(STATIC_RENDER): examples/$(STATIC_RENDER).cpp
