@@ -124,6 +124,24 @@ public:
   double cos_theta;
   bool hasbox;
   AABB bbox;
+
+private:
+  Vec3 rotate(const Vec3 &v) const
+  {
+    auto rot_v = v;
+    rot_v[0] = cos_theta * v[0] + sin_theta * v[2];
+    rot_v[2] = -sin_theta * v[0] + cos_theta * v[2];
+    return rot_v;
+  }
+
+  Vec3 counter_rotate(const Vec3 &v) const
+  {
+    // "transpose rotation matrix" to reverse rotation
+    auto rot_v = v;
+    rot_v[0] = cos_theta * v[0] - sin_theta * v[2];
+    rot_v[2] = sin_theta * v[0] + cos_theta * v[2];
+    return rot_v;
+  }
 };
 
 RotateY::RotateY(shared_ptr<Hittable> p, double angle_degrees) : ptr(p)
@@ -146,13 +164,13 @@ RotateY::RotateY(shared_ptr<Hittable> p, double angle_degrees) : ptr(p)
       auto x = (i == 0) ? bbox.max().x() : bbox.min().x();
       auto z = (k == 0) ? bbox.max().z() : bbox.min().z();
 
-      auto newx = cos_theta * x + sin_theta * z;
-      auto newz = -sin_theta * x + cos_theta * z;
+      Vec3 v(x, 0, z);
+      auto newv = rotate(v);
 
-      min[0] = fmin(min[0], newx);
-      max[0] = fmax(max[0], newx);
-      min[2] = fmin(min[2], newz);
-      max[2] = fmax(max[2], newz);
+      min[0] = fmin(min[0], newv.x());
+      max[0] = fmax(max[0], newv.x());
+      min[2] = fmin(min[2], newv.z());
+      max[2] = fmax(max[2], newv.z());
     }
   }
 
@@ -161,32 +179,16 @@ RotateY::RotateY(shared_ptr<Hittable> p, double angle_degrees) : ptr(p)
 
 bool RotateY::hit(const Ray &r, double t_min, double t_max, hit_record *rec) const
 {
-  auto origin = r.origin();
-  auto direction = r.direction();
-
-  origin[0] = cos_theta * r.origin()[0] - sin_theta * r.origin()[2];
-  origin[2] = sin_theta * r.origin()[0] + cos_theta * r.origin()[2];
-
-  direction[0] = cos_theta * r.direction()[0] - sin_theta * r.direction()[2];
-  direction[2] = sin_theta * r.direction()[0] + cos_theta * r.direction()[2];
+  auto origin = counter_rotate(r.origin());
+  auto direction = counter_rotate(r.direction());
 
   Ray rotated_r(origin, direction, r.time());
 
   if (!ptr->hit(rotated_r, t_min, t_max, rec))
     return false;
 
-  auto p = rec->p;
-  auto normal = rec->normal;
-
-  // "transpose rotation matrix" to reverse rotation
-  p[0] = cos_theta * rec->p[0] + sin_theta * rec->p[2];
-  p[2] = -sin_theta * rec->p[0] + cos_theta * rec->p[2];
-
-  normal[0] = cos_theta * rec->normal[0] + sin_theta * rec->normal[2];
-  normal[2] = -sin_theta * rec->normal[0] + cos_theta * rec->normal[2];
-
-  rec->p = p;
-  rec->set_face_normal(rotated_r, normal);
+  rec->p = rotate(rec->p);
+  rec->set_face_normal(rotated_r, rotate(rec->normal));
 
   return true;
 }
