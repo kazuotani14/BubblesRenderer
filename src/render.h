@@ -72,18 +72,21 @@ void render(std::ostream &out, const Hittable &world, shared_ptr<Hittable> light
           Ray r = cam.get_ray(u, v);
 
           // TODO
-          // Color sample_color = ray_color(r, background, world, lights, max_depth);
+          Color sample_color = ray_color(r, background, world, lights, max_depth);
 
           // Hack to try to get rid of speckles
-          // if (isnan(sample_color[0]) || isnan(sample_color[1]) || isnan(sample_color[2]) || sample_color[0] > 15 || sample_color[1] > 15 || sample_color[2] > 15)
-          // {
-          //   ++num_rejected;
-          //   continue;
-          // }
+          static constexpr double max_light = 15;
+          const bool nan_color = isnan(sample_color[0]) || isnan(sample_color[1]) || isnan(sample_color[2]);
+          const bool high_val_color = sample_color[0] > max_light || sample_color[1] > max_light || sample_color[2] > max_light;
+          if (nan_color || high_val_color)
+          {
+            ++num_rejected;
+            continue;
+          }
 
-          // pixel_color += sample_color;
+          pixel_color += sample_color;
 
-          pixel_color += ray_color(r, background, world, lights, max_depth);
+          // pixel_color += ray_color(r, background, world, lights, max_depth);
         }
         pixel_color /= (samples_per_pixel - num_rejected);
 

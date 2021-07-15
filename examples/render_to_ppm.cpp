@@ -9,8 +9,8 @@
 int main()
 {
   // Image
-  int image_width = 300;
-  int samples_per_pixel = 100;
+  int image_width = 400;
+  int samples_per_pixel = 200;
   int max_depth = 50;
 
   int scene_id = 4;
