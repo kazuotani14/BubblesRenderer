@@ -10,6 +10,7 @@ inline void write_color(std::ostream &out, const Color &pixel_color)
   auto g = pixel_color.y();
   auto b = pixel_color.z();
 
+  // TODO
   // Replace NaN components with zero. See explanation in Ray Tracing: The Rest of Your Life.
   // if (isnan(r))
   //   r = 0.0;

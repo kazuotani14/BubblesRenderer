@@ -69,6 +69,7 @@ void render(std::ostream &out, const Hittable &world, shared_ptr<Hittable> light
           auto v = (row + random_double()) / (H - 1);
           Ray r = cam.get_ray(u, v);
 
+          // TODO
           // Color sample_color = ray_color(r, background, world, lights, max_depth);
 
           // Hack to try to get rid of speckles
