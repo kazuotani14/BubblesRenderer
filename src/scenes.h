@@ -195,15 +195,25 @@ Scene cornell_box()
   objects.add(make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
   // make sure light is pointing only down
-  objects.add(make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 554, light)));
+  auto ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(213, 343, 227, 332, 354, light));
+  objects.add(make_shared<Translate>(ceiling_light, Vec3(0, +200, 0)));
 
-  shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
-  box1 = make_shared<RotateY>(box1, 15);
+  shared_ptr<Material>
+      aluminum = make_shared<Metal>(Color(0.8, 0.85, 0.88), 0);
+  shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), aluminum);
+
+  // shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
+  // box1 = make_shared<RotateY>(box1, 15);
   box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
   objects.add(box1);
 
   auto glass = make_shared<Dielectric>(1.5);
   objects.add(make_shared<Sphere>(Point3(190, 90, 190), 90, glass));
+
+  // shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
+  // box2 = make_shared<RotateY>(box2, -18);
+  // box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+  // objects.add(box2);
 
   Scene scene;
   scene.objects = objects;

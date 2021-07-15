@@ -59,6 +59,9 @@ public:
 
   virtual bool bounding_box(double time0, double time1, AABB *output_box) const override;
 
+  virtual double pdf_value(const Point3 &o, const Vec3 &v) const override;
+  virtual Vec3 random(const Point3 &o) const override;
+
 public:
   shared_ptr<Hittable> ptr;
   Vec3 offset;
@@ -85,6 +88,21 @@ bool Translate::bounding_box(double time0, double time1, AABB *output_box) const
       output_box->min() + offset,
       output_box->max() + offset);
   return true;
+}
+
+double Translate::pdf_value(const Point3 &o, const Vec3 &v) const
+{
+  const Point3 moved_o = o - offset;
+
+  hit_record rec;
+  if (!this->hit(Ray(moved_o, v), 0.001, infinity, &rec))
+    return 0;
+  return ptr->pdf_value(moved_o, v);
+}
+
+Vec3 Translate::random(const Point3 &o) const
+{
+  return ptr->random(o - offset);
 }
 
 /// Rotate about origin. TODO template on axis for x and z
