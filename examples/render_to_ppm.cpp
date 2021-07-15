@@ -40,8 +40,8 @@ int main()
     break;
   case 5: // cornell box smoke
     scene = cornell_smoke();
-    image_width = 600;
-    samples_per_pixel = 200;
+    image_width = 200;
+    samples_per_pixel = 100;
     break;
   case 6:
     scene = final_scene();
@@ -70,9 +70,9 @@ int main()
   // The sphere in this case is a glass object, a source of noise
   // TODO move this to scenes.h
   auto lights = std::make_shared<HittableList>();
-  auto ceiling_light = make_shared<XZRect>(213, 343, 227, 332, 354, nullptr); // 554 -> 354
-  // lights->add(ceiling_light);
-  lights->add(make_shared<Translate>(ceiling_light, Vec3(0, +200, 0)));
+  auto ceiling_light = make_shared<XZRect>(213, 343, 227, 332, 554, nullptr); // 554 -> 354
+  lights->add(ceiling_light);
+  // lights->add(make_shared<Translate>(ceiling_light, Vec3(0, +200, 0)));
   // lights->add(make_shared<Sphere>(Point3(190, 90, 190), 90, nullptr));
 
   // shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), nullptr);
