@@ -78,12 +78,12 @@ int main()
   ceiling_light = make_shared<RotateY>(ceiling_light, 15);
   lights->add(make_shared<Translate>(ceiling_light, Vec3(0, +200, 0)));
 
-  // lights->add(make_shared<Sphere>(Point3(190, 90, 190), 90, nullptr));
+  lights->add(make_shared<Sphere>(Point3(190, 90, 190), 90, nullptr));
 
-  // shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), nullptr);
-  // box1 = make_shared<RotateY>(box1, 15);
-  // box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
-  // lights->add(box1);
+  shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), nullptr);
+  box1 = make_shared<RotateY>(box1, 15);
+  box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+  lights->add(box1);
 
   timing::tic();
   render(std::cout, world_bvh, lights, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
