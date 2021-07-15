@@ -55,12 +55,12 @@ public:
     if (!this->hit(Ray(origin, v), 0.001, infinity, &rec))
       return 0;
 
-    auto area = (x1 - x0) * (y1 - y0);
+    const double area = (x1 - x0) * (y1 - y0);
     auto distance_squared = rec.t * rec.t * v.length_squared();
     auto cosine = fabs(dot(v, rec.normal) / v.length());
 
-    const double pdf_val = distance_squared / (cosine * area);
-    assert(pdf_val >= -1e-6 && pdf_val <= 1 + 1e-6);
+    const double solid_angle = area * cosine / distance_squared;
+    const double pdf_val = 1 / solid_angle;
     return pdf_val;
   }
 

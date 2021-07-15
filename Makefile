@@ -14,6 +14,11 @@ all: $(ALL_TARGETS) $(TESTS)
 clean:
 	rm -f $(ALL_TARGETS) $(TESTS)
 
+# Note to self: use -B to force rebuild
+static_render:
+	rm $(STATIC_RENDER); make $(STATIC_RENDER)
+	./render_to_ppm > image.ppm && open image.ppm
+
 $(STATIC_RENDER): examples/$(STATIC_RENDER).cpp
 	$(CC) $(INCLUDE_PATH) $(CFLAGS) -o $(STATIC_RENDER) examples/$(STATIC_RENDER).cpp
 $(FLUIDS_RENDER): examples/$(FLUIDS_RENDER).cpp
