@@ -5,6 +5,7 @@
 #include "color.h"
 #include "material.h"
 #include "hittable.h"
+#include "pdf.h"
 #include "timing.h"
 
 #include <iostream>
@@ -25,17 +26,27 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
   // hit_timer.stop();
 
   // timing::Timer emit_timer("ray_color/emit");
-  Color attenuation;
-  Ray scattered;
   Color emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
   // emit_timer.stop();
 
   // timing::Timer scatter_timer("ray_color/scatter");
-  if (!rec.mat_ptr->scatter(r, rec, &attenuation, &scattered))
+  scatter_record srec;
+  if (!rec.mat_ptr->scatter(r, rec, &srec))
     return emitted;
   // scatter_timer.stop();
 
-  return emitted + attenuation * ray_color(scattered, background, world, lights, depth - 1);
+  // Skip importance sampling for specular reflections
+  if (srec.is_specular)
+    return srec.attenuation * ray_color(srec.specular_ray, background, world, lights, depth - 1);
+
+  // Importance sampling: scatter pdf of hit material + sample towards lights
+  auto lights_pdf = make_shared<HittablePDF>(lights, rec.p);
+  MixturePDF mixed_pdf(lights_pdf, srec.pdf_ptr);
+
+  auto scattered = Ray(rec.p, mixed_pdf.generate(), r.time());
+  const double likelihood_ratio = srec.pdf_ptr->value(scattered.direction()) / mixed_pdf.value(scattered.direction());
+
+  return emitted + srec.attenuation * ray_color(scattered, background, world, lights, depth - 1) * likelihood_ratio;
 }
 
 void render(std::ostream &out, const Hittable &world, shared_ptr<Hittable> lights, const Camera &cam, int H, int W, const Color &background, int samples_per_pixel, int max_depth, int num_threads = std::thread::hardware_concurrency(), bool print_progress = true)

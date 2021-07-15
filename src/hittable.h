@@ -25,9 +25,27 @@ struct hit_record
 class Hittable
 {
 public:
+  virtual ~Hittable() = default;
+
+  // Core methods
   virtual bool hit(const Ray &r, double t_min, double t_max, hit_record *rec) const = 0;
   virtual bool bounding_box(double time0, double time1, AABB *output_box) const = 0;
-  virtual ~Hittable() = default;
+
+  // Methods for supporting importance sampling with HittablePDF
+  // Compute probability of sampling a given vector from random(o) method
+  virtual double pdf_value(const Point3 & /*origin*/, const Vec3 & /*v*/) const
+  {
+    std::cerr << "Warning: you are using importance sampling on an unsupported derived class" << std::endl;
+    return 0.0;
+  }
+
+  // Sample vector from origin to random point within Hittable
+  // TODO consider if this should instead just sample a random point within Hittable, and leave the origin subtraction for caller
+  virtual Vec3 random(const Vec3 & /*origin*/) const
+  {
+    std::cerr << "Warning: you are using importance sampling on an unsupported derived class" << std::endl;
+    return Vec3(1, 0, 0);
+  }
 };
 
 class Translate : public Hittable

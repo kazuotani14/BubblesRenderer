@@ -19,6 +19,10 @@ public:
 
   virtual bool bounding_box(double time0, double time1, AABB *output_box) const override;
 
+  // TODO add support for motion blur (these should be function of time)
+  virtual double pdf_value(const Point3 &o, const Vec3 &v) const override;
+  virtual Vec3 random(const Point3 &o) const override;
+
   Point3 center(double time) const;
 
 public:
@@ -97,4 +101,24 @@ bool Sphere::bounding_box(double time0, double time1, AABB *output_box) const
       min_center - rad3,
       max_center + rad3);
   return true;
+}
+double Sphere::pdf_value(const Point3 &o, const Vec3 &v) const
+{
+  hit_record rec;
+  if (!this->hit(Ray(o, v), 0.001, infinity, &rec))
+    return 0;
+
+  auto cos_theta_max = sqrt(1 - radius * radius / (center0 - o).length_squared());
+  auto solid_angle = 2 * pi * (1 - cos_theta_max);
+
+  return 1 / solid_angle;
+}
+
+Vec3 Sphere::random(const Point3 &o) const
+{
+  Vec3 direction = center0 - o;
+  auto distance_squared = direction.length_squared();
+  OrthonormalBases uvw;
+  uvw.build_from_w(direction);
+  return uvw.local(random_to_sphere(radius, distance_squared));
 }

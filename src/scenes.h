@@ -202,10 +202,8 @@ Scene cornell_box()
   box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
   objects.add(box1);
 
-  shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
-  box2 = make_shared<RotateY>(box2, -18);
-  box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
-  objects.add(box2);
+  auto glass = make_shared<Dielectric>(1.5);
+  objects.add(make_shared<Sphere>(Point3(190, 90, 190), 90, glass));
 
   Scene scene;
   scene.objects = objects;

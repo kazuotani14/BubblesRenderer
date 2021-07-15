@@ -66,7 +66,12 @@ int main()
   // Render
   int image_height = static_cast<int>(image_width / scene.cam->aspect_ratio);
 
-  auto lights = shared_ptr<Hittable>();
+  // This shouldn't really be called "lights"; these should be called "bias_towards" or something
+  // The sphere in this case is a glass object, a source of noise
+  // TODO move this to scenes.h
+  auto lights = std::make_shared<HittableList>();
+  lights->add(make_shared<XZRect>(213, 343, 227, 332, 554, nullptr));
+  lights->add(make_shared<Sphere>(Point3(190, 90, 190), 90, nullptr));
 
   timing::tic();
   render(std::cout, world_bvh, lights, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);

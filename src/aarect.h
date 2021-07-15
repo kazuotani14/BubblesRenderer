@@ -49,6 +49,28 @@ public:
     return true;
   }
 
+  virtual double pdf_value(const Point3 &origin, const Vec3 &v) const override
+  {
+    hit_record rec;
+    if (!this->hit(Ray(origin, v), 0.001, infinity, &rec))
+      return 0;
+
+    auto area = (x1 - x0) * (y1 - y0);
+    auto distance_squared = rec.t * rec.t * v.length_squared();
+    auto cosine = fabs(dot(v, rec.normal) / v.length());
+
+    return distance_squared / (cosine * area);
+  }
+
+  virtual Vec3 random(const Point3 &origin) const override
+  {
+    Point3 random_point;
+    random_point[axes.first] = random_double(x0, x1);
+    random_point[axes.second] = random_double(y0, y1);
+    random_point[AlignedAxis] = k;
+    return random_point - origin;
+  }
+
 public:
   double x0, x1, y0, y1, k; // k is z value
   shared_ptr<Material> mp;
