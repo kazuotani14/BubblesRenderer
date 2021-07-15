@@ -37,7 +37,7 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
 
   // Skip importance sampling for specular reflections
   if (srec.is_specular)
-    return srec.attenuation * ray_color(srec.specular_ray, background, world, lights, depth - 1);
+    return emitted + srec.attenuation * ray_color(srec.specular_ray, background, world, lights, depth - 1);
 
   // Importance sampling: scatter pdf of hit material + sample towards lights
   std::vector<shared_ptr<PDF> > pdfs = {srec.pdf_ptr};
