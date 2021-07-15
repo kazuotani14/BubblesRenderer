@@ -59,7 +59,9 @@ public:
     auto distance_squared = rec.t * rec.t * v.length_squared();
     auto cosine = fabs(dot(v, rec.normal) / v.length());
 
-    return distance_squared / (cosine * area);
+    const double pdf_val = distance_squared / (cosine * area);
+    assert(pdf_val >= -1e-6 && pdf_val <= 1 + 1e-6);
+    return pdf_val;
   }
 
   virtual Vec3 random(const Point3 &origin) const override

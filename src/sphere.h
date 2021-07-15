@@ -109,10 +109,12 @@ double Sphere::pdf_value(const Point3 &o, const Vec3 &v) const
   if (!this->hit(Ray(o, v), 0.001, infinity, &rec))
     return 0;
 
-  auto cos_theta_max = sqrt(1 - radius * radius / (center0 - o).length_squared());
+  auto cos_theta_max = sqrt(1 - (radius * radius) / (center0 - o).length_squared());
   auto solid_angle = 2 * pi * (1 - cos_theta_max);
 
-  return 1 / solid_angle;
+  const double pdf_val = 1 / solid_angle;
+  assert(pdf_val >= -1e-6 && pdf_val <= 1 + 1e-6);
+  return pdf_val;
 }
 
 Vec3 Sphere::random(const Point3 &o) const
