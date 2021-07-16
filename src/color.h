@@ -10,15 +10,6 @@ inline void write_color(std::ostream &out, const Color &pixel_color)
   auto g = pixel_color.y();
   auto b = pixel_color.z();
 
-  // // Replace NaN components with zero. Workaround for issues within renderer; use as needed
-  // // See detailed explanation in Ray Tracing: The Rest of Your Life.
-  // if (isnan(r))
-  //   r = 0.0;
-  // if (isnan(g))
-  //   g = 0.0;
-  // if (isnan(b))
-  //   b = 0.0;
-
   // Gamma-correct for gamma=2.0.
   r = sqrt(r);
   g = sqrt(g);
