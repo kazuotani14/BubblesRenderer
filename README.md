@@ -19,7 +19,3 @@ See TODOs.md for future work.
 ![](./examples/images/final_scene.jpg)
 
 ![](./examples/images/blockdrop_3d_2.gif)
-
-### References
-
-* ["Physically Based Rendering" book](https://www.pbrt.org/)
