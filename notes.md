@@ -12,6 +12,7 @@
     * https://brilliant.org/wiki/continuous-random-variables-probability-density/
     * https://computergraphics.stackexchange.com/questions/9711/confusion-about-light-pdf
   * Current sampling strategy samples uniformly on object surface. [This article](https://schuttejoe.github.io/post/arealightsampling/) argues that sampling uniformly on solid angle gives better results.
+  * "Area" as defined in the scatter PDFs isn't surface area in meters^2; it's defined in solid angle (steridians, with polar coordinates).
 
 ### Fluids
 
