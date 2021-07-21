@@ -1,3 +1,5 @@
+#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
+
 #include "bvh.h"
 #include "camera.h"
 #include "render.h"
@@ -13,7 +15,7 @@ int main()
   int samples_per_pixel = 200;
   int max_depth = 50;
 
-  int scene_id = 4;
+  int scene_id = 11;
 
   // Build world
   timing::tic();
@@ -49,6 +51,18 @@ int main()
     static constexpr double half_box_size = 0.5 * box_size;
     static constexpr double particle_size = 16.0;
     scene = water_in_box(box_size, particle_size, {{half_box_size, half_box_size, half_box_size}});
+    break;
+  case 9:
+    scene = single_triangle();
+    break;
+  case 10:
+    scene = utah_teapot();
+    break;
+  case 11:
+    scene = stanford_bunny();
+    break;
+  case 12:
+    scene = stanford_dragon();
     break;
   default:
     std::cerr << "Invalid scene id: " << scene_id << std::endl;

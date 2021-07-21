@@ -4,6 +4,7 @@
 #include "common.h"
 #include "hittable_list.h"
 #include "material.h"
+#include "triangle_mesh.h"
 #include "sphere.h"
 #include "aarect.h"
 #include "box.h"
@@ -451,4 +452,92 @@ Scene water_in_box(double box_size, double particle_size, const std::vector<Poin
 
   scene.background = Color(0.7, 0.8, 1.0);
   return scene;
+}
+
+Scene single_triangle()
+{
+  auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+
+  HittableList objects;
+  Triangle::Vertices verts = {Point3(-0.5, -0.5, 1), Point3(-0.5, 0.5, 1), Point3(0.5, -0.5, 1)};
+  objects.add(make_shared<Triangle>(verts, green));
+
+  Scene scene;
+  scene.objects = objects;
+
+  Point3 lookfrom(0, 0, 0);
+  Point3 lookat(0, 0, 1);
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 60.0;
+  double aspect_ratio = 16.0 / 9.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+  scene.cam = Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+
+  scene.background = Color(0.7, 0.8, 1.0);
+  return scene;
+}
+
+Scene mesh_side_view(const std::string &mesh_file)
+{
+  HittableList objects;
+
+  auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+  auto mesh = import_triangle_mesh(mesh_file, green);
+
+  AABB mesh_bb;
+  assert(mesh->bounding_box(0, 1, &mesh_bb));
+  Vec3 mesh_size = mesh_bb.max() - mesh_bb.min();
+  Vec3 mesh_center = mesh_bb.min() + 0.5 * mesh_size;
+  // std::cerr << "mesh_bb: " << mesh_bb.min() << " | " << mesh_bb.max() << std::endl;
+  // std::cerr << "mesh_center: " << mesh_center << std::endl;
+  // std::cerr << "mesh_size: " << mesh_size << std::endl;
+
+  objects.add(mesh);
+
+  auto light = make_shared<DiffuseLight>(Color(20, 20, 20));
+  auto sphere_light = make_shared<Sphere>(Point3(mesh_bb.max().x() + 0.5 * mesh_size.x(), mesh_bb.max().y() + 0.5 * mesh_size.y(), 0), 0.5, light);
+  objects.add(sphere_light);
+
+  auto ground = make_shared<Lambertian>(make_shared<CheckerTexture>(Color(0.3, 0.3, 0.3), Color(0.9, 0.9, 0.9)));
+  objects.add(make_shared<XZRect>(-mesh_bb.min().x() - 2 * mesh_size.x(), mesh_bb.min().x() + 2 * mesh_size.x(), -mesh_bb.min().z() - 2 * mesh_size.z(), mesh_bb.min().z() + 2 * mesh_size.z(), mesh_bb.min().y() - 0.1, ground));
+
+  Scene scene;
+  scene.objects = objects;
+
+  auto lights = std::make_shared<HittableList>();
+  lights->add(sphere_light);
+  scene.lights = lights;
+
+  Point3 lookfrom(mesh_center.x(), mesh_center.y(), mesh_center.z() + 2 * mesh_size.z());
+  Point3 lookat(mesh_center.x(), mesh_center.y(), mesh_center.z());
+  Vec3 vup(0, 1, 0);
+  double dist_to_focus = 10.0;
+  double aperture = 0.0;
+  double vfov = 60.0;
+  double aspect_ratio = 16.0 / 9.0;
+  double t_start = 0.0;
+  double t_end = 1.0;
+  scene.cam = Camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, t_start, t_end);
+
+  scene.background = Color(0.02, 0.02, 0.02);
+
+  return scene;
+}
+
+Scene utah_teapot()
+{
+  return mesh_side_view("./examples/meshes/teapot.obj");
+}
+
+Scene stanford_bunny()
+{
+  return mesh_side_view("./examples/meshes/bunny.obj");
+}
+
+Scene stanford_dragon()
+{
+  return mesh_side_view("./examples/meshes/dragon.obj");
 }

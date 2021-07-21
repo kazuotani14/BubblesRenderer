@@ -22,6 +22,13 @@ struct hit_record
   }
 };
 
+// For debugging
+inline std::ostream &operator<<(std::ostream &out, const hit_record &rec)
+{
+  return out << "Hittable:\n"
+             << "p: " << rec.p << "\nnormal: " << rec.normal << ", t: " << rec.t << ", u: " << rec.u << ", v: " << rec.v << ", front: " << int(rec.front_face) << std::endl;
+}
+
 class Hittable
 {
 public:

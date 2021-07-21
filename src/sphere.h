@@ -7,9 +7,13 @@
 class Sphere : public Hittable
 {
 public:
-  Sphere() {}
+  Sphere() = default;
+
+  /// Static sphere constructor
   Sphere(const Point3 &cen, double r, shared_ptr<Material> m)
       : center0(cen), center1(cen), time0(0.0), time1(1.0), radius(r), mat_ptr(m){};
+
+  /// Moving sphere constructor
   Sphere(const Point3 &cen0, const Point3 &cen1, double t0, double t1,
          double r, shared_ptr<Material> m)
       : center0(cen0), center1(cen1), time0(t0), time1(t1), radius(r), mat_ptr(m){};
