@@ -1,6 +1,6 @@
 # Bubbles Renderer
 
-Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/). Name comes from the fact that this renderer only supported rendering of spheres at the beginning. Repo also contains dynamics simulations + infra to render sim results.
+Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/). Name comes from the fact that in its first version, this renderer only supported rendering of spheres. Repo also contains dynamics simulations + infra to render sim results.
 
 ### Features
 
