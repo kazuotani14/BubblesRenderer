@@ -36,13 +36,13 @@ bool box_z_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b)
 class BVHNode : public Hittable
 {
 public:
-  BVHNode(const HittableList &list, double time0, double time1)
+  BVHNode(HittableList list, double time0, double time1)
       : BVHNode(list.objects, 0, list.objects.size(), time0, time1)
   {
   }
 
   BVHNode(
-      const std::vector<shared_ptr<Hittable> > &src_objects,
+      std::vector<shared_ptr<Hittable> > &objects,
       size_t start_idx, size_t end_idx, double time0, double time1);
 
   virtual bool hit(
@@ -56,11 +56,11 @@ public:
 };
 
 BVHNode::BVHNode(
-    const std::vector<shared_ptr<Hittable> > &src_objects,
+    std::vector<shared_ptr<Hittable> > &objects,
     size_t start_idx, size_t end_idx, double time0, double time1)
 {
-  assert(src_objects.size() > 0);
-  auto objects = src_objects; // Create a modifiable array of the source scene objects
+
+  assert(objects.size() > 0);
 
   int axis = random_int(0, 2);
   auto comparator = (axis == 0)   ? box_x_compare
@@ -96,7 +96,6 @@ BVHNode::BVHNode(
   }
 
   AABB box_left, box_right;
-
   if (!left->bounding_box(time0, time1, &box_left) || !right->bounding_box(time0, time1, &box_right))
     std::cerr << "No bounding box in BVHNode constructor." << std::endl;
 

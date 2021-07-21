@@ -4,7 +4,7 @@
 #include <iostream>
 #include <mutex>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 namespace timing
 {
@@ -31,9 +31,9 @@ namespace timing
     double num;
   };
 
-  inline std::unordered_map<std::string, TimingData> &data_instance()
+  inline std::map<std::string, TimingData> &data_instance()
   {
-    static std::unordered_map<std::string, TimingData> data;
+    static std::map<std::string, TimingData> data;
     return data;
   }
 

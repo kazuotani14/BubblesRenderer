@@ -10,9 +10,9 @@
 #include "external/tinyobjloader.h"
 
 // TODO implement Hittable class that:
-// * doesn't duplicate vertices (see PBRT)
+// * supports translation/rotation/scaling of mesh
 // * wraps BVH, provides importance sampling
-// * supports translation/rotation of mesh
+// * doesn't duplicate vertices (see PBRT)
 
 shared_ptr<BVHNode> import_triangle_mesh(const std::string &mesh_file, shared_ptr<Material> mat_ptr)
 {

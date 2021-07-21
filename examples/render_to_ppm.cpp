@@ -18,7 +18,7 @@ int main()
   int scene_id = 11;
 
   // Build world
-  timing::tic();
+  timing::Timer build_scene_timer("build_scene");
   Scene scene;
   switch (scene_id)
   {
@@ -69,14 +69,16 @@ int main()
     exit(1);
   }
   auto world_bvh = BVHNode(scene.objects, /* time0 */ 0, /* time1 */ 9999);
-  timing::toc("build world representation");
+  build_scene_timer.stop();
+
+  std::cerr << "finished building scene; rendering!" << std::endl;
 
   // Render
   int image_height = static_cast<int>(image_width / scene.cam->aspect_ratio);
 
-  timing::tic();
+  timing::Timer render_timer("render");
   render(std::cout, world_bvh, scene.lights, *scene.cam, image_height, image_width, scene.background, samples_per_pixel, max_depth);
-  timing::toc("render");
+  render_timer.stop();
 
   timing::print(std::cerr);
 
