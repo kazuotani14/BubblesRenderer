@@ -25,10 +25,10 @@
 
 # TODOs
 
-* for cornell box: how to reduce noise? see "rest of your life" for importance sampling
-  * doxy core interfaces; it's getting confusing
-  * make sure all types of hittables/materials are still supported
-    * put support for motion blur back into interfaces (Sphere class is the only one for now)
+* doxy core interfaces; it's getting confusing
+* make sure all types of hittables/materials are still supported
+  * put support for motion blur back into interfaces (Sphere class is the only one for now)
+  * add spherical PDF to Isotropic
 
 * Improve SPH
   * Surface tension: implement color field gradient + marching cubes (requires triangle mesh rendering)
@@ -36,7 +36,6 @@
 * speed up bottlenecks
   * rendering: hit
       * parallelize samples or pixels more: GPU
-      * profile and optimize individual primitives' hit methods
   * fluids: at current scale, rendering takes much more time
     * finding neighbors: implement spatial hash table
     * better numerical integration scheme -> use larger timesteps

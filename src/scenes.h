@@ -367,14 +367,16 @@ Scene final_scene()
 
   // Add rest of objects
   auto light = make_shared<DiffuseLight>(Color(7, 7, 7));
-  objects.add(make_shared<XZRect>(123, 423, 147, 412, 554, light));
+  auto ceiling_light = make_shared<FlipFace>(make_shared<XZRect>(123, 423, 147, 412, 554, light));
+  objects.add(ceiling_light);
 
   auto center1 = Point3(400, 400, 200);
   auto center2 = center1 + Vec3(30, 0, 0);
   auto moving_sphere_material = make_shared<Lambertian>(Color(0.7, 0.3, 0.1));
   objects.add(make_shared<Sphere>(center1, center2, 0, 1, 50, moving_sphere_material));
 
-  objects.add(make_shared<Sphere>(Point3(260, 150, 45), 50, make_shared<Dielectric>(1.5)));
+  auto glass_sphere = make_shared<Sphere>(Point3(260, 150, 45), 50, make_shared<Dielectric>(1.5));
+  objects.add(glass_sphere);
   objects.add(make_shared<Sphere>(
       Point3(0, 150, 145), 50, make_shared<Metal>(Color(0.8, 0.8, 0.9), 1.0)));
 
@@ -392,6 +394,11 @@ Scene final_scene()
 
   Scene scene;
   scene.objects = objects;
+
+  auto lights = std::make_shared<HittableList>();
+  lights->add(ceiling_light);
+  lights->add(glass_sphere);
+  scene.lights = lights;
 
   Point3 lookfrom(478, 278, -600);
   Point3 lookat(278, 278, 0);
@@ -489,20 +496,21 @@ Scene mesh_side_view(const std::string &mesh_file)
 
   AABB mesh_bb;
   assert(mesh->bounding_box(0, 1, &mesh_bb));
-  Vec3 mesh_size = mesh_bb.max() - mesh_bb.min();
-  Vec3 mesh_center = mesh_bb.min() + 0.5 * mesh_size;
+  const Vec3 mesh_size = mesh_bb.max() - mesh_bb.min();
+  const Vec3 mesh_center = mesh_bb.min() + 0.5 * mesh_size;
   // std::cerr << "mesh_bb: " << mesh_bb.min() << " | " << mesh_bb.max() << std::endl;
   // std::cerr << "mesh_center: " << mesh_center << std::endl;
   // std::cerr << "mesh_size: " << mesh_size << std::endl;
-
   objects.add(mesh);
 
-  auto light = make_shared<DiffuseLight>(Color(20, 20, 20));
-  auto sphere_light = make_shared<Sphere>(Point3(mesh_bb.max().x() + 0.5 * mesh_size.x(), mesh_bb.max().y() + 0.5 * mesh_size.y(), 0), 0.5, light);
+  auto light_mat = make_shared<DiffuseLight>(Color(20, 20, 20));
+  const double light_r = 0.5 * std::min({mesh_size.x(), mesh_size.y(), mesh_size.z()});
+  const Point3 light_center(mesh_bb.min().x() - 0.5 * mesh_size.x(), mesh_bb.max().y() + 0.5 * mesh_size.y(), mesh_center.z());
+  auto sphere_light = make_shared<Sphere>(light_center, light_r, light_mat);
   objects.add(sphere_light);
 
   auto ground = make_shared<Lambertian>(make_shared<CheckerTexture>(Color(0.3, 0.3, 0.3), Color(0.9, 0.9, 0.9)));
-  objects.add(make_shared<XZRect>(-mesh_bb.min().x() - 2 * mesh_size.x(), mesh_bb.min().x() + 2 * mesh_size.x(), -mesh_bb.min().z() - 2 * mesh_size.z(), mesh_bb.min().z() + 2 * mesh_size.z(), mesh_bb.min().y() - 0.1, ground));
+  objects.add(make_shared<XZRect>(-mesh_bb.min().x() - 2 * mesh_size.x(), mesh_bb.max().x() + 2 * mesh_size.x(), -mesh_bb.min().z() - 2 * mesh_size.z(), mesh_bb.max().z() + 2 * mesh_size.z(), mesh_bb.min().y() - 0.1, ground));
 
   Scene scene;
   scene.objects = objects;

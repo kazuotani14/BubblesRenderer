@@ -15,7 +15,7 @@ int main()
   int samples_per_pixel = 200;
   int max_depth = 50;
 
-  int scene_id = 11;
+  int scene_id = 10;
 
   // Build world
   timing::Timer build_scene_timer("build_scene");

@@ -18,22 +18,22 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
   if (depth <= 0)
     return Color(0, 0, 0);
 
-  // timing::Timer hit_timer("ray_color/hit");
+  timing::Timer hit_timer("ray_color/hit");
   hit_record rec;
   // If the ray hits nothing, return the background color.
   if (!world.hit(r, 0.001, infinity, &rec))
     return background;
-  // hit_timer.stop();
+  hit_timer.stop();
 
-  // timing::Timer emit_timer("ray_color/emit");
+  timing::Timer emit_timer("ray_color/emit");
   Color emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
-  // emit_timer.stop();
+  emit_timer.stop();
 
-  // timing::Timer scatter_timer("ray_color/scatter");
+  timing::Timer scatter_timer("ray_color/scatter");
   scatter_record srec;
   if (!rec.mat_ptr->scatter(r, rec, &srec))
     return emitted;
-  // scatter_timer.stop();
+  scatter_timer.stop();
 
   // Skip importance sampling for specular reflections
   if (srec.is_specular)
@@ -45,8 +45,10 @@ Color ray_color(const Ray &r, const Color &background, const Hittable &world, sh
     pdfs.push_back(make_shared<HittablePDF>(lights, rec.p));
   MixturePDF mixed_pdf(pdfs);
 
+  timing::Timer sampling_timer("ray_color/sample_pdf");
   auto scattered = Ray(rec.p, mixed_pdf.generate(), r.time());
   const double likelihood_ratio = srec.pdf_ptr->value(scattered.direction()) / mixed_pdf.value(scattered.direction());
+  sampling_timer.stop();
 
   return emitted + srec.attenuation * ray_color(scattered, background, world, lights, depth - 1) * likelihood_ratio;
 }

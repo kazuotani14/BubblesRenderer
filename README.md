@@ -1,10 +1,17 @@
 # Bubbles Renderer
 
-Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/). Name comes from the fact that this renderer pretty much only supports rendering of spheres (and boxes) at the moment. Repo also contains dynamics simulations + infra to render sim results.
+Simple ray trace renderer based on ["Ray Tracing in One Weekend" tutorial series](https://raytracing.github.io/). Name comes from the fact that this renderer only supported rendering of spheres at the beginning. Repo also contains dynamics simulations + infra to render sim results.
 
-To build and run:
+### Features
+
+* Path tracing with importance sampling toward lights
+* Shapes: Spheres (with motion blur), rectangles, boxes, 3D meshes (obj files)
+* Materials: Lambertian, (fuzzy) metal, dielectrics (e.g. glass), isotropic (e.g. smoke), image textures
+* Fluid sim with Smoothed Particle Hydrodynamics (SPH)
+
+### Build/run
 ```
-make
+make # See Makefile for other options
 
 # For rendering of hard-coded scenes
 ./render_to_ppm > image.ppm
@@ -14,8 +21,10 @@ make
 convert -delay 20 -loop 0 examples/images/frame_*.ppm fluid_sim.gif
 ```
 
-See TODOs.md for future work.
+### Gallery
 
 ![](./examples/images/final_scene.jpg)
+
+![](./examples/images/dragon.jpg)
 
 ![](./examples/images/blockdrop_3d_2.gif)
